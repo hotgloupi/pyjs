@@ -1,0 +1,20 @@
+
+<PUBLIC:COMPONENT>
+    <PUBLIC:PROPERTY NAME="__class__" INTERNALNAME="___class__" />
+    <PUBLIC:METHOD NAME="isIn" INTERNALNAME="_isIn" />
+    <PUBLIC:METHOD NAME="contains" INTERNALNAME="_contains" />
+    <PUBLIC:METHOD NAME="attr" INTERNALNAME="_attr" />
+    <PUBLIC:METHOD NAME="query" INTERNALNAME="_query" />
+    <PUBLIC:METHOD NAME="__setitem__" INTERNALNAME="___setitem__" />
+    <PUBLIC:METHOD NAME="__getitem__" INTERNALNAME="___getitem__" />
+    <script type="text/javascript">
+        var el = new Element;
+        ___class__ = "Element";
+        _isIn = el.isIn;
+        _contains = el.contains;
+        ___setitem__ = el.__setitem__;
+        ___getitem__ = el.__getitem__;
+        _attr = el.attr;
+        _query = el.query;
+    </script>
+</PUBLIC:COMPONENT>

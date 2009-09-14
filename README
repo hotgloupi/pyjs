@@ -1,0 +1,13 @@
+
+python dependencies (with easy_install):
+    genshi
+    cherrypy
+    simplejson
+    mutagen
+
+with your package system :
+    mad and bindings (py-mad)
+
+
+
+

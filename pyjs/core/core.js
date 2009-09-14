@@ -1,15 +1,33 @@
-﻿(function(){
+﻿/**
+ * @fileOverview Core PyJS file, the first to be loaded
+ * @author <a href="mailto:raphael.londeix@gmail.com">Raphaël Londeix</a>
+ * @version 0.1
+*/
 
-if (console) {
+if (typeof console != "undefined") {
     log = function(){console.log.apply(console, arguments);};
+    warn = function(){console.warn.apply(console, arguments);};
 } else {
-    log = function(){};
+    log = warn = function(){};
 }
 
+
+/**
+ * Global PyJS namespace
+ * @namespace
+ */
 py = {
 
+    config: {
+        extremist: false,
+        withGlobals: false
+    },
+
 	// Contains directories path for each namespaces
-	_modules_path: {},
+    _modules_path: {},
+
+    // When load modules, append a query args to prevent caching
+    _prevent_cache: true,
 
 	// Alias to document and others
 	doc: null,
@@ -63,6 +81,12 @@ py = {
     // Load and eval JavaScript from url
     // TODO figure out best loading method
     loadJs: function(/*String*/ url) {
+        if (this._prevent_cache) {
+            var d = new Date();
+            if (url.indexOf('?') === -1) {url += '?';}
+            else {url += '&';}
+            url += 'preventCache='+d.getTime()+'.'+d.getMilliseconds();
+        }
         var xhr = this.xhrObj();
         xhr.open('GET', url, false);
         xhr.send(null);
@@ -73,8 +97,8 @@ py = {
         }
     },
 
-	'import': function(/*String*/ name) {
-		var parts = name.split('.'), folder, filname;
+    _moduleToURL: function(name) {
+        var parts = name.split('.'), folder, filename;
 		if (parts.length == 1) {
 			folder = py._modules_path.py.replace('pyjs/', '');
 			filename = name+'.js';
@@ -89,9 +113,13 @@ py = {
 				folder += parts[i] + '/';
 			}
 			filename = parts.pop() + '.js';
-		}
+        }
+        return folder+filename;
+    },
+
+	importModule: function(/*String*/ name) {
         log('import module: ',name);
-		this.loadJs(folder+filename);
+		py.loadJs(py._moduleToURL(name));
 	},
 
     // returns an XmlHTTPRequest Object
@@ -134,10 +162,12 @@ py = {
     // from Dojo
     isXhrOk: function(xhr) {
         var stat = xhr.status || 0;
-        return (stat >= 200 && stat < 300) || 	// Boolean
-				stat == 304 || 						// allow any 2XX response code
-				stat == 1223 || 						// get it out of the cache
-				(!stat && (location.protocol=="file:" || location.protocol=="chrome:") );
+        return (
+            stat >= 200 && stat < 300) || 			// allow any 2XX response code
+            stat == 304 ||
+            stat == 1223 || 						// get it out of the cache
+            (!stat && (location.protocol=="file:" || location.protocol=="chrome:")
+        );
     },
 
     // Eval in global scope, returns nothing
@@ -151,13 +181,12 @@ py = {
         }
     }
 };
-
-// window alias
 py.global = this;
 
 py.__init__();
-py.import('py.prototype.layer');
-py.import('py.core.class');
-py.import('py.core.error');
-
-})();
+py.importModule('py.prototype.__init__');
+py.importModule('py.core.globals');
+py.importModule('py.core.class');
+py.importModule('py.core.error');
+py.importModule('py.core.browser');
+py.importModule('py.core.dom');

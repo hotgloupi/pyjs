@@ -62,7 +62,7 @@ declare = function(name, parents, obj) {
     _parents.iter(function(pclass) {
         pclass.prototype.iteritems(function(key, val) {
             if (key.isIn(_reserved_names)) {return;}
-            if (isinstance(val, Function)) {
+            if (py.isinstance(val, Function)) {
                 _class.prototype[key] = wrap_function(key, val);
             } else {
                 _class.prototype[key] = val;
@@ -72,7 +72,7 @@ declare = function(name, parents, obj) {
     obj.iteritems(function(key, val) {
         if (key.isIn(_reserved_names)) {return;}
         if (key === 'constructor') {return;}
-        if (isinstance(val, Function)) {
+        if (py.isinstance(val, Function)) {
             _class.prototype[key] = wrap_function(key, val);
         } else {
             _class.prototype[key] = val;
@@ -89,7 +89,7 @@ function _super(_class, obj, f) {
     while (true) {
         try {
             var p = it.next();
-            if (p.prototype[f] && isinstance(p.prototype[f], Function)) {
+            if (p.prototype[f] && py.isinstance(p.prototype[f], Function)) {
                 return function() {
                     p.prototype[f].apply(self, arguments);
                 };

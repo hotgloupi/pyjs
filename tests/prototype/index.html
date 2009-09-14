@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>Test Page</title>
+        <script type="text/javascript" src="../../jsunit/app/jsUnitCore.js"></script>
+        <script type="text/javascript">
+            function test_prototype() {
+                var suite = new top.jsUnitTestSuite();
+                suite.addTestPage("/tests/prototype/object.html");
+                return suite;
+            }
+
+            function suite() {
+                var newsuite = new top.jsUnitTestSuite();
+                newsuite.addTestSuite(test_prototype());
+                return newsuite;
+            }
+        </script>
+  </head>
+  <body>
+  </body>
+</html>
