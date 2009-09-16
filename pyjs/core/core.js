@@ -20,14 +20,17 @@ py = {
 
     config: {
         extremist: false,
-        withGlobals: false
+        withGlobals: false,
+        preventCache: true
     },
 
 	// Contains directories path for each namespaces
     _modules_path: {},
 
-    // When load modules, append a query args to prevent caching
-    _prevent_cache: true,
+    // Contains loaded modules
+    _loaded_modules:  {
+        'py.core.core': true // this is the name of this module !
+    },
 
 	// Alias to document and others
 	doc: null,
@@ -41,7 +44,14 @@ py = {
 	_findGlobals: function() {
 		//TODO complete for browser compatibility
 		py.doc = window.document;
-		py.body = py.doc.body;
+        py.body = py.doc.body;
+        if (typeof pyConfig !== "undefined") { // config from user
+            for (var c in pyConfig) {
+                if (pyConfig.hasOwnProperty(c)) {
+                    this.config[c] = pyConfig[c];
+                }
+            }
+        }
 	},
 
 	_initPyModulesPath: function() {
@@ -81,7 +91,7 @@ py = {
     // Load and eval JavaScript from url
     // TODO figure out best loading method
     loadJs: function(/*String*/ url) {
-        if (this._prevent_cache) {
+        if (this.config.preventCache) {
             var d = new Date();
             if (url.indexOf('?') === -1) {url += '?';}
             else {url += '&';}
@@ -93,7 +103,7 @@ py = {
         if (!this.isXhrOk(xhr)) {
             throw "Cannot load URI " + url;
         } else {
-            this.globalEval(xhr.responseText);
+            return xhr.responseText;
         }
     },
 
@@ -117,9 +127,18 @@ py = {
         return folder+filename;
     },
 
-	importModule: function(/*String*/ name) {
+    importModule: function(/*String*/ name) {
+        if (this._loaded_modules[name]) {return;}
+
         log('import module: ',name);
-		py.loadJs(py._moduleToURL(name));
+        var src = this.loadJs(py._moduleToURL(name));
+        try {
+            this.globalEval(src);
+        } catch (err) {
+            // TODO better error report
+            throw "Error while loading module " + name + ' : ' + err;
+        }
+        this._loaded_modules[name] = true;
 	},
 
     // returns an XmlHTTPRequest Object

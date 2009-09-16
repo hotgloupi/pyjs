@@ -7,6 +7,8 @@
 (function() {
 
 var methods = {
+    /** @lends py*/
+
     /**
      * Check if an obj is Not Undefined And Not Null
      * @param obj anything
@@ -113,12 +115,22 @@ for (var m in methods) {
     }
 }
 
-if (py.config.withGlobals === true) {
-    methods.iteritems(function(n, fn) {
-        window[n] = fn;
-    });
-}
 
 })();
+
+if (py.config.withGlobals === true) {
+    notNone = py.notNone;
+    isNone = py.isNone;
+    raiseNone = py.raiseNone;
+    isinstance = py.isinstance;
+    equal = py.equal;
+    len = py.len;
+    iter = py.iter;
+    str = py.str;
+    repr = py.repr;
+} else {
+    iter = undefined;
+    window.iter = null;
+}
 
 
