@@ -203,7 +203,7 @@ Object.prototype.keys = function keys() {
  * @returns {Array} values
  */
 Object.prototype.values = function values() {
-    return this.iter().map(function(k) {return this[k];});
+    return this.iter().map(function(k) {return this[k];}, this);
 };
 
 
@@ -212,7 +212,7 @@ Object.prototype.values = function values() {
  * @returns {Arrays} pairs
  */
 Object.prototype.items = function items() {
-    return this.iter().map(function(k) {return [k, this[k]];});
+    return this.iter().map(function(k) {return [k, this[k]];}, this);
 };
 
 /**

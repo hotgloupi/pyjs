@@ -6,7 +6,7 @@ var _reserved_names = [
     '__parents__'
 ];
 
-declareFromBuiltin = function(name, _parent, obj) {
+py.declareFromBuiltin = function(name, _parent, obj) {
     var _class = function() {
         _class.prototype.__init__.apply(this, arguments);
     };
@@ -30,59 +30,65 @@ declareFromBuiltin = function(name, _parent, obj) {
     return _class;
 };
 
+var class_super = function(_class) {
+    return function(/*arguments|String*/ args, /*Array?*/ real_args) {
+        /*<debug*/py.raiseNone(args);/*debug>*/
+        var fname;
+        if (py.isinstance(args, String)) {
+            fname = args;
+        } else {
+            /*<debug*/try {/*debug>*/
+                 fname = args.callee.__name__;
+            /*<debug*/ } catch (err) {
+                 throw Error("$super first argument must be the JavaScript variable 'arguments':"+ err);
+             }/*debug>*/
+        }
+        var f = py.$super(_class, this, fname);
+        if (py.notNone(real_args)) {
+            return f.apply(null, real_args);
+        } else {
+            return f.apply(null, args);
+        }
+    };
+};
 
-
-declare = function(name, parents, obj) {
+py.declare = function declare(name, parents, obj) {
 
     var _class = function() {
         _class.prototype.__init__.apply(this, arguments);
     };
-    _class.prototype = new GenericClass();
     _class.prototype.__class__ = name;
     var _parents = parents || [];
-    if (!isinstance(_parents, Array)) {
+    if (!py.isinstance(_parents, Array)) {
         _parents = [parents];
     }
     _class.prototype.__parents__ = _parents;
 
-    // WARNING: thread conflict
-    var wrap_function = function(fname, f) {
-        return function() {
-            var old_inherit = this.inherited;
-            this.inherited = function() {
-                var sup = _super(_class, this, fname);
-                return sup.apply(this, arguments);
-            };
-            var ret = f.apply(this, arguments);
-            this.inherited = old_inherit;
-            return ret;
-        };
-    };
-
     _parents.iter(function(pclass) {
         pclass.prototype.iteritems(function(key, val) {
             if (key.isIn(_reserved_names)) {return;}
+            _class.prototype[key] = val;
             if (py.isinstance(val, Function)) {
-                _class.prototype[key] = wrap_function(key, val);
-            } else {
-                _class.prototype[key] = val;
+                _class.prototype[key].__name__ = key;
             }
         });
     });
     obj.iteritems(function(key, val) {
         if (key.isIn(_reserved_names)) {return;}
         if (key === 'constructor') {return;}
+        _class.prototype[key] = val;
         if (py.isinstance(val, Function)) {
-            _class.prototype[key] = wrap_function(key, val);
-        } else {
-            _class.prototype[key] = val;
+            _class.prototype[key].__name__ = key;
         }
     });
+
+    _class.prototype.$super = class_super(_class);
     window[name] = _class;
     return _class;
 };
+})();
 
-function _super(_class, obj, f) {
+py.$super = function $super(_class, obj, f) {
     var _parents = _class.prototype.__parents__.reverse(),
         it = _parents.__iter__(),
         self = this;
@@ -95,7 +101,7 @@ function _super(_class, obj, f) {
                 };
             }
         } catch (err) {
-            if (isinstance(err, StopIteration)) {
+            if (py.isinstance(err, StopIteration)) {
                 throw new AttributeError(obj.__class__ + ' hasn\'t parent with member '+f);
             } else {
                 throw err;
@@ -103,5 +109,5 @@ function _super(_class, obj, f) {
         }
     }
 };
-})();
+
 

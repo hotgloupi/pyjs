@@ -143,7 +143,7 @@ Array.prototype.any = function() {
     }
     return _some ? function any(fn, scope) {
         /*<debug*/py.raiseNone(fn);/*debug>*/
-        _some.call(this, fn, scope);
+        return _some.call(this, fn, scope);
     } : Object.prototype.any;
 }();
 

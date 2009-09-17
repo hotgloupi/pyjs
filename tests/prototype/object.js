@@ -40,6 +40,111 @@ function iter() {
     assert('iter() scope', pass.passed === 'member');
 }
 
+function iteritems() {
+    var s;
+    a.iteritems(function(k,v) {s = v});
+    assert(s === 'normal');
+}
+
+function itervalues() {
+    var s;
+    a.itervalues(function(v) { s  = v});
+    assert(s === 'normal');
+}
+
+function keys() {
+    var v = a.keys();
+    assert(v.length === 1);
+    assert(v[0] === 'member');
+}
+
+function values() {
+    var v = a.values();
+    assert(v.length === 1);
+    assert(v[0] === 'normal');
+}
+
+function items() {
+    var v = a.items();
+    assert(v.length === 1);
+    assert(v[0][0] === 'member');
+    assert(v[0][1] === 'normal');
+}
+
+function equals() {
+    var b = {
+        member: 'normal'
+    };
+    assertTrue(a.equals(b));
+    assertFalse(a.equals(null));
+    assertFalse(a.equals({}));
+    assertFalse(a.equals([]));
+    assertFalse(a.equals(""));
+}
+
+function isIn() {
+    assertTrue(('member').isIn(a));
+    assertTrue('member'.isIn(a));
+    assertTrue('member'.isIn(a.keys()));
+    assertTrue('normal'.isIn(a.values()));
+}
+
+function contains() {
+    assertTrue(a.contains('member'));
+    assertFalse(a.contains('pif'));
+}
+
+function any() {
+    var b = {
+        key1: 1,
+        key2: 2,
+        foo: 'bar'
+    };
+    assertTrue(b.any(function(k) {
+        return k === 'foo';
+    }));
+
+    assertTrue(b.any(function(k) {
+        return k.length === 3;
+    }));
+    assertTrue(b.any(function(k) {
+        return k.length === 4;
+    }));
+
+    assertFalse(b.any(function(k) {
+        return k.length === 5;
+    }));
+    assertFalse(b.any(function(k) {
+        return k === 'pif';
+    }));
+}
+
+function all() {
+    var b = {
+        key1: 1,
+        key2: 2,
+        foo: 'bar'
+    };
+    assertTrue(b.all(function(k) {
+        return k.length < 5;
+    }));
+
+    assertFalse(b.all(function(k) {
+        return k.length === 4;
+    }));
+}
+
+function update() {
+    var b = {};
+    b.update(a);
+    assert(typeof b.member !== "undefined");
+    assert(b.member === 'normal');
+    assert(b.keys().length === 1);
+    assert(a.keys().length === 1);
+    assert(a.equals(b));
+    assert(b.equals(a));
+}
+
 function tearDown() {
     a = null;
 }
