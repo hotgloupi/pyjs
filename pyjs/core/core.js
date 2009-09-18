@@ -219,10 +219,11 @@ py.global = this;
 
 py.__init__();
 py.importModule('py.prototype.__init__');
-py.importModule('py.core.globals');
 py.importModule('py.core.class');
 py.importModule('py.core.error');
 
 py.importModule('py.core.utils');
 py.importModule('py.core.browser');
 py.importModule('py.core.dom');
+
+py.importModule('py.core.globals');

@@ -28,7 +28,7 @@ $$ = function $$(selectors, ref) {return py.dom.query(selectors, ref);};
  * @returns {Element} created element
  * @see py.dom.create
  */
-$c = function $c(tag){return document.createElement(tag);};
+$c = py.dom.create;
 
 /**
  * Create a text node
