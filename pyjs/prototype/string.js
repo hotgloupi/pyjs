@@ -67,17 +67,42 @@ String.prototype.__len__ = function() {
     return this.length;
 };
 
-/**
- * Specific implementation for String. It returns an `Iterable` Object
- * @private
- * @returns {Array}
- * @see <a href="http://docs.python.org/library/stdtypes.html#iterator-types">Python Iterators</a>
- */
-String.prototype.__iter__ = function() {
-    this._index = 0;
-    this._len = this.__len__();
-    return this;
-};
+
+(function(){
+    function StringIterator(s) {
+        this._str = s;
+        this._len = s.length;
+        this._index = 0;
+        this.__class__ = 'StringIterator';
+    }
+    StringIterator.prototype.next = function next() {
+        if (this._index < this._len) {
+            var c = this._str.charAt(this._index);
+            this._index += 1;
+            return c;
+        }
+        throw new StopIteration();
+    };
+    /**
+     * Specific implementation for String. It returns an `Iterable` Object
+     * @private
+     * @returns {Array}
+     * @see <a href="http://docs.python.org/library/stdtypes.html#iterator-types">Python Iterators</a>
+     */
+    String.prototype.__iter__ = function() {
+        return new StringIterator(this);
+
+        // TODO: figure out why this is not working on Chrome
+        // to reproduce :
+        //      a = 'pif';
+        //      a.foo = 'bar';
+        //      a.foo === 'bar'; //false
+        this._index = 0;
+        this._len = this.__len__();
+        return this;
+    };
+
+})();
 
 /**
  * Return the next character or raise StopIteration
@@ -86,6 +111,7 @@ String.prototype.__iter__ = function() {
  * @see <a href="http://docs.python.org/library/stdtypes.html#iterator-types">Python Iterators</a>
  */
 String.prototype.next = function() {
+    // WARNING: Not used, see __iter__
     if (this._index < this._len) {
         var val = this.charAt(this._index);
         this._index += 1;

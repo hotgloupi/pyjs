@@ -4,27 +4,17 @@
  * @version 0.1
  */
 
-py.importModule('py.core.jsmin');
+// TODO: modularize choice of packer method
+py.importModule('py.packer.jsmin');
 
 /**
  * Packer utitities
  * @namespace
  */
-py.packer = {
+py.extendNamespace('py.packer', {
 
     RE_IMPORT: /py\.importModule\(["'][\w\._]+["']\)\s*;/g,
     RE_MODULE: /.*['"]([\w\._]+)["'].*/,
-
-    loadJS: function(url) {
-        var xhr = py.xhrObj();
-        xhr.open('GET', url, false);
-        xhr.send(null);
-        if (!py.isXhrOk(xhr)) {
-            throw "Cannot load URI " + url;
-        } else {
-            return xhr.responseText;
-        }
-    },
 
     params: {
         lvl: 2,
@@ -79,7 +69,7 @@ py.packer = {
         });
         if (this.params.lvl > 0) {
             log('Compress file with level '+ this.params.lvl);
-            src = py.jsmin ('', src, this.params.lvl);
+            src = py.packer.compressor.jsmin('', src, this.params.lvl);
         }
 
         return src;
@@ -91,7 +81,7 @@ py.packer = {
         } else {
             this._loaded_modules.append(name);
         }
-        var src = this.loadJS(py._moduleToURL(name));
+        var src = py.loadJs(py.getModuleUrl(name));
         this.input += src.length;
         src = this._applyParams(src);
 
@@ -116,4 +106,4 @@ py.packer = {
         area.appendChild(node);
         py.doc.body.appendChild(area);
     }
-};
+});

@@ -32,8 +32,10 @@ py = {
         'py.core.core': true // this is the name of this module !
     },
 
-	// Alias to document and others
-	doc: null,
+    /** alias of document */
+    doc: null,
+
+    /** alias of body */
 	body: null,
 
 	__init__: function() {
@@ -72,24 +74,18 @@ py = {
 		}
 	},
 
-	// Create node with given tag and apply attributes given
-	create: function(/*String*/ tag, /*Object?*/ attrs) {
-		// TODO complete to use args
-		var node = py.doc.createElement(tag);
-		return node;
-	},
-
-
-	_loadJsWithTag: function(/*String*/ url) {
+	loadJsFromOtherDomain: function(/*String*/ url) {
 		var head = py.doc.getElementsByTagName('head')[0],
-			loader = py.create('script');
+			loader = py.dom.create('script');
 		loader.src = url;
 		head.appendChild(loader);
 	},
 
 
-    // Load and eval JavaScript from url
-    // TODO figure out best loading method
+    /** Load JavaScript from url
+     * @param {String} url url to load
+     * @returns {String} source code
+     */
     loadJs: function(/*String*/ url) {
         if (this.config.preventCache) {
             var d = new Date();
@@ -107,7 +103,12 @@ py = {
         }
     },
 
-    _moduleToURL: function(name) {
+    /**
+     * Get the URL of a Module name
+     * @param {String} name dotted module name
+     * @returns {String} Url of the module
+     */
+    getModuleUrl: function(name) {
         var parts = name.split('.'), folder, filename;
 		if (parts.length == 1) {
 			folder = py._modules_path.py.replace('pyjs/', '');
@@ -127,11 +128,15 @@ py = {
         return folder+filename;
     },
 
+    /**
+     * Import module from dotted name
+     * @param {String} name the module name
+     */
     importModule: function(/*String*/ name) {
         if (this._loaded_modules[name]) {return;}
 
         log('import module: ',name);
-        var src = this.loadJs(py._moduleToURL(name));
+        var src = this.loadJs(py.getModuleUrl(name));
         try {
             this.globalEval(src);
         } catch (err) {
@@ -141,7 +146,10 @@ py = {
         this._loaded_modules[name] = true;
 	},
 
-    // returns an XmlHTTPRequest Object
+    /**
+     * Cross browser XMLHttpRequest
+     * @returns {XMLHttpRequest} XmlHTTPRequest Object
+     */
     xhrObj: function() {
         var methods = {
                 f1: function() {
@@ -177,9 +185,12 @@ py = {
         throw "XmlHttpRequest is not available";
     },
 
-    // returns true is XHR has no error
-    // from Dojo
-    isXhrOk: function(xhr) {
+    /**
+     * Verify if an XHR status is OK
+     * @params {XMLHttpRequest} xhr
+     * @returns {Boolean} true if XHR has no error
+     */
+    isXhrOk: function(xhr) {    // From Dojo
         var stat = xhr.status || 0;
         return (
             stat >= 200 && stat < 300) || 			// allow any 2XX response code
@@ -189,7 +200,10 @@ py = {
         );
     },
 
-    // Eval in global scope, returns nothing
+    /**
+     * Eval anything in the global scope
+     * @param {String} text Source code to eval
+     */
     globalEval: function(text) {
         if (py.global.execScript) {
             py.global.execScript(text, "javascript");
@@ -198,7 +212,8 @@ py = {
         } else {
             eval(text);
         }
-    }
+    },
+
 };
 py.global = this;
 
@@ -207,5 +222,7 @@ py.importModule('py.prototype.__init__');
 py.importModule('py.core.globals');
 py.importModule('py.core.class');
 py.importModule('py.core.error');
+
+py.importModule('py.core.utils');
 py.importModule('py.core.browser');
 py.importModule('py.core.dom');
