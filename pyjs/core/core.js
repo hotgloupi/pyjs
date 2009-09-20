@@ -212,7 +212,7 @@ py = {
         } else {
             eval(text);
         }
-    },
+    }
 
 };
 py.global = this;
