@@ -37,3 +37,15 @@ $c = py.dom.create;
  */
 $t = function $t(str){return document.createTextNode(str);};
 
+
+/**
+ * Set or get attribute(s) from a node
+ * @see py.dom.attr
+ */
+$attr = py.dom.attr;
+
+/**
+ * Set or get style(s) from a node
+ * @see py.dom.style
+ */
+$style = py.dom.style;

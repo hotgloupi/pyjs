@@ -20,7 +20,7 @@ py = {
 
     config: {
         extremist: false,
-        withGlobals: false,
+        withGlobals: true,
         preventCache: true
     },
 
@@ -226,4 +226,6 @@ py.importModule('py.core.utils');
 py.importModule('py.core.browser');
 py.importModule('py.core.dom');
 
-py.importModule('py.core.globals');
+if (py.config.withGlobals === true) {
+    py.importModule('py.core.globals');
+}

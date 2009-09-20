@@ -9,9 +9,14 @@ py.importModule('py.packer.jsmin');
 
 /**
  * Packer utitities
+ * @name py.packer
  * @namespace
  */
+
+
 py.extendNamespace('py.packer', {
+
+    /** @lends py.packer */
 
     RE_IMPORT: /py\.importModule\(["'][\w\._]+["']\)\s*;/g,
     RE_MODULE: /.*['"]([\w\._]+)["'].*/,

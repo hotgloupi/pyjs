@@ -7,6 +7,10 @@
     <PUBLIC:METHOD NAME="query" INTERNALNAME="_query" />
     <PUBLIC:METHOD NAME="__setitem__" INTERNALNAME="___setitem__" />
     <PUBLIC:METHOD NAME="__getitem__" INTERNALNAME="___getitem__" />
+    <PUBLIC:METHOD NAME="setStyle" INTERNALNAME="_setStyle" />
+    <PUBLIC:METHOD NAME="setStyles" INTERNALNAME="_setStyles" />
+    <PUBLIC:METHOD NAME="getStyle" INTERNALNAME="_getStyle" />
+    <PUBLIC:METHOD NAME="getStyles" INTERNALNAME="_getStyles" />
     <script type="text/javascript">
         var el = new Element;
         ___class__ = "Element";
@@ -16,5 +20,9 @@
         ___getitem__ = el.__getitem__;
         _attr = el.attr;
         _query = el.query;
+        _setStyle = el.setStyle;
+        _setStyles = el.setStyles;
+        _getStyle = el.getStyle;
+        _getStyles = el.getStyles;
     </script>
 </PUBLIC:COMPONENT>

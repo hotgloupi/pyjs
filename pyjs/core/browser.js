@@ -1,6 +1,6 @@
 (function(){
 
-// This script help for detection
+// This script help for detection (actually, it Do the detection)
 // http://www.quirksmode.org/js/detect.html
 var BrowserDetect = {
     init: function () {
@@ -181,6 +181,11 @@ var attributes_maps = {
     }
 };
 
+// assume all styles are camelCased
+var styles_maps = {
+
+};
+
 py.browser.update({
     getViewportWidth: function() {
         var width = 0;
@@ -253,13 +258,13 @@ py.browser.update({
         };
     },
 
-    getAttributesMap: function() {
+    getBrowserMapping: function(maps) {
         var _map = {};
 
-        if (attributes_maps.base) {
-            _map.update(attributes_maps.base);
+        if (maps.base) {
+            _map.update(maps.base);
         }
-        var ref = attributes_maps[this.name];
+        var ref = maps[this.name];
         if (ref) {
             if (ref.base) {
                 _map.update(ref.base);
@@ -270,6 +275,14 @@ py.browser.update({
             }
         }
         return _map;
+    },
+
+    getAttributesMap: function () {
+        return py.browser.getBrowserMapping(attributes_maps);
+    },
+
+    getStylesMap: function () {
+        return py.browser.getBrowserMapping(styles_maps);
     }
 });
 

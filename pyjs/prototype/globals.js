@@ -38,9 +38,11 @@ var methods = {
     },
 
     /**
-     * Check is an object is an instance of a class
-     * @params {Object} obj object to check
-     * @params {Object} _class a class
+     * Check is an object is an instance of a class. If you give
+     * more than one class, it will return true if one of them
+     * is good.
+     * @params {Object} obj Object to check
+     * @params {Object} _class A class, You can give more than one class
      * @returns {Boolean}
      */
     isinstance: function isinstance(obj, _class) {
@@ -48,7 +50,17 @@ var methods = {
         py.raiseNone(obj);
         py.raiseNone(_class);
         /*debug>*/
-        return obj.__class__ === _class.prototype.__class__;
+        var l = arguments.length;
+        if (l === 2) {
+            return obj.__class__ === _class.prototype.__class__;
+        } else {
+            for (; l>1; l -=1) {
+                if (obj.__class__ === arguments[l-1].prototype.__class__) {
+                    return true;
+                }
+            }
+            return false
+        }
     },
 
     /**
