@@ -6,6 +6,62 @@
 
 (function() {
 
+
+
+function insertionSort(a, cmp) {
+    var i, tmp, len = a.length;
+    a.iter(function(tmp, j) {
+        if (j == a.length - 1) {return;}
+        i = j;
+        tmp = a[j+1];
+        while ( i > -1 && cmp(a[i], tmp)) {
+            a[i+1] = a[i];
+            i = i - 1;
+        }
+        a[i+1] = tmp;
+    });
+    return a;
+}
+
+function quickSort(a, cmp) {
+    var alength = a.length, tmp;
+    function swap(a, pos1, pos2) { // still waiting for javascript 1.8
+        tmp = a[pos2];
+        a[pos2] = a[pos1];
+        a[pos1] = tmp;
+    }
+
+    function partition(a, start, end) {
+        while (start < end) {
+            while (start < end) {
+                if (cmp(a[start], a[end])) {
+                    swap(a, start, end);
+                    break;
+                }
+                end--;
+            }
+            while (start < end) {
+                if (cmp(a[start], a[end])) {
+                    swap(a, start, end);
+                    break;
+                }
+                start++;
+            }
+        }
+        return start;
+    }
+
+    function qsort(a, start, end) {
+        if (!(start < end)) { return; }
+        var idx = partition(a, start, end - 1);
+        qsort(a, start, idx);
+        qsort(a, idx+1, end);
+    }
+
+    qsort(a, 0, alength);
+    return a;
+}
+
 var methods = {
     /** @lends py*/
 
@@ -117,7 +173,30 @@ var methods = {
     /**
      * This function do nothing
      */
-    nothing: function nothing(){}
+    nothing: function nothing(){},
+
+    /**
+     * Sort an Iterable
+     * @param {Array} Iterable to sort
+     * @param {Function} [cmp=>] comparator function
+     * @returns {Array} Sorted values in an array
+     */
+    sorted: function(a, cmp) {
+        if (py.isinstance(a, Array)) {
+            var tmp = a.slice();
+        } else {
+            var tmp = [];
+            a.iter(function(i, idx) { tmp[idx] = i; });
+        }
+        if (py.isNone(cmp)) {
+            cmp = function(a, b) { return a > b;};
+        }
+        if (py.len(tmp) > 15) {
+            return quickSort(tmp, cmp);
+        } else {
+            return insertionSort(tmp, cmp);
+        }
+    }
 };
 
 //WARNING cannot use update method here, isinstance is used ...
@@ -140,6 +219,7 @@ if (py.config.withGlobals === true) {
     iter = py.iter;
     str = py.str;
     repr = py.repr;
+    sorted = py.sorted;
 } else {
     iter = undefined;
     window.iter = null;

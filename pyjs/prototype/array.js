@@ -187,3 +187,13 @@ if (!Array.prototype.filter) {
     };
 }
 
+
+/**
+ * Sort and return a new array
+ * @param {Function} [cmp] Comparator function (default is >)
+ * @returns {Array} sorted array
+ */
+Array.prototype.sort = function sort(cmp) {
+    return py.sorted(this, cmp);
+};
+
