@@ -109,6 +109,7 @@ String.prototype.__len__ = function() {
  * @returns {String} the next char
  * @private
  * @see <a href="http://docs.python.org/library/stdtypes.html#iterator-types">Python Iterators</a>
+ * @ignore
  */
 String.prototype.next = function() {
     // WARNING: Not used, see __iter__
@@ -189,3 +190,46 @@ String.prototype.rstrip = function rstrip(chars) {
     return str;
 };
 
+/**
+ * Return true if string starts with given string
+ * @param {String} str the sub string
+ * @returns {Boolean}
+ */
+String.prototype.startswith = function startswith(str) {
+    /*<debug*/
+    if (py.isNone(str) || !py.isinstance(str, String)) {
+        throw TypeError('str must be a string');
+    }
+    /*debug>*/
+    var len = str.length;
+    if (len > this.length) {return false;}
+    for (; len > 0; len--) {
+        if (this.charAt(len-1) !== str.charAt(len-1)) {
+            return false;
+        }
+    }
+    return true;
+};
+
+/**
+ * Return true if the string ends with given string
+ * @param {String} str The sub string
+ * @returns {Boolean}
+ */
+String.prototype.endswith = function endswith(str) {
+    /*<debug*/
+    if (py.isNone(str) || !py.isinstance(str, String)) {
+        throw TypeError('str must be a string');
+    }
+    /*debug>*/
+    var len = str.length,
+        tlen = this.length;
+    if (len > tlen) { return false;}
+    while (len > 0) {
+        len--; tlen--;
+        if (this.charAt(tlen) !== str.charAt(len)) {
+            return false;
+        }
+    }
+    return true;
+};
