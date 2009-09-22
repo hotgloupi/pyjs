@@ -2,10 +2,8 @@
  * @fileOverview Utilities functions
  */
 
-/** @namespace py */
-
 py.update({
-    /** lends py */
+    /** @lends py */
 
     /**
      * Extend a namespace (created if needed) with an object

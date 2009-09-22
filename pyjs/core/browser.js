@@ -1,3 +1,18 @@
+/**
+ * @fileOverview Browser specific properties and methods. Detection
+ *               obtained with <a href="http://www.quirksmode.org/js/detect.html">Paul-Peter Koch</a>
+ *               script.
+ * @author <a href="mailto:raphael.londeix@gmail.com"> Raphaël Londeix </a>
+ * @version 0.1
+ */
+
+/**
+ * Browser specifics properties and methods
+ * @namespace
+ * @name py.browser
+ */
+
+
 (function(){
 
 // This script help for detection (actually, it Do the detection)
@@ -125,10 +140,19 @@ var BrowserDetect = {
 BrowserDetect.init();
 
 py.browser = {
+    /** @lends py.browser */
+
+    /** Name of the browser */
     name: BrowserDetect.browser,
+
+    /** Version of the browser */
     version: BrowserDetect.version,
+
+    /** Operating system detected */
     OS: BrowserDetect.OS
 };
+
+
 BrowserDetect = null;
 function useSetGetAttribute(attr) {
     return function(v) {
@@ -187,6 +211,12 @@ var styles_maps = {
 };
 
 py.browser.update({
+
+    /** @lends py.browser */
+
+    /**
+     * @returns {Number} The viewport width
+     */
     getViewportWidth: function() {
         var width = 0;
         if( document.documentElement && document.documentElement.clientWidth ) {
@@ -201,6 +231,9 @@ py.browser.update({
         return width;
     },
 
+    /**
+     * @returns {Number} The viewport height
+     */
     getViewportHeight: function() {
         var height = 0;
         if (document.documentElement && document.documentElement.clientHeight) {
@@ -215,6 +248,9 @@ py.browser.update({
         return height;
     },
 
+    /**
+     * @returns {Number} The viewport horizontal offset
+     */
     getViewportScrollX: function() {
         var scrollX = 0;
         if( document.documentElement && document.documentElement.scrollLeft ) {
@@ -232,6 +268,9 @@ py.browser.update({
         return scrollX;
     },
 
+    /**
+     * @returns {Number} The viewport vertical offset
+     */
     getViewportScrollY: function() {
         var scrollY = 0;
         if( document.documentElement && document.documentElement.scrollTop ) {
@@ -249,6 +288,9 @@ py.browser.update({
         return scrollY;
     },
 
+    /**
+     * @returns {Object} The viewport size and offset (properties t, l, w and h)
+     */
     getViewport: function() {
         return {
             t: this.getViewportScrollY(),
@@ -277,10 +319,16 @@ py.browser.update({
         return _map;
     },
 
+    /**
+     * @returns {Object} Node attributes mapping computed after browser detection
+     */
     getAttributesMap: function () {
         return py.browser.getBrowserMapping(attributes_maps);
     },
 
+    /**
+     * @returns {Object} Styles properties mapping computed after browser detection
+     */
     getStylesMap: function () {
         return py.browser.getBrowserMapping(styles_maps);
     }

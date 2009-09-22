@@ -72,7 +72,31 @@ py = {
 			//TODO: external load
 			py._modules_path.py = py_src.replace('core/core.js', '');
 		}
-	},
+    },
+
+    registerModulePath: function(prefix, path) {
+        /*<debug*/
+        py.raiseNone(prefix);
+        py.raiseNone(path);
+        if (!py.isinstance(prefix, String) || !py.isinstance(path, String)) {
+            throw TypeError('prefix and path arguments must be String');
+        }
+        if (prefix.length === 0) {
+            throw new ValueError('prefix must be a non empty String');
+        }
+        if (prefix.contains('.')) {
+            throw new ValueError('prefix cannot contains the "." character');
+        }
+        if (path.length === 0) {
+            throw new ValueError('path must be a non empty String');
+        }
+        if (prefix.isIn(this._modules_path)) {
+            throw new Error("The prefix "+ prefix +" was already registered");
+        }
+        /*debug>*/
+        path = path.rstrip('/') + '/';
+        this._modules_path[prefix] = path;
+    },
 
 	loadJsFromOtherDomain: function(/*String*/ url) {
 		var head = py.doc.getElementsByTagName('head')[0],

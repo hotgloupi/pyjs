@@ -233,3 +233,38 @@ String.prototype.endswith = function endswith(str) {
     }
     return true;
 };
+String.prototype.regEscape = function() {
+    return this.
+           replace(/\\/g, '\\\\').
+           replace(/\./g, '\\.').
+           replace(/\$/g, '\\$$').
+           replace(/\[/g, '\\[').
+           replace(/\]/g, '\\]').
+           replace(/\(/g, '\\(').
+           replace(/\)/g, '\\)').
+           replace(/\{/g, '\\{').
+           replace(/\}/g, '\\}').
+           replace(/\^/g, '\\^').
+           replace(/\*/g, '\\*').
+           replace(/\+/g, '\\+').
+           replace(/\-/g, '\\-');
+};
+
+String.prototype.contains = function contains(s) {
+    //<debug
+    if (py.isNone(s) || !py.isinstance(s, String)) {
+        throw TypeError('Argument s must be a String');
+    }
+    //debug>
+
+    return this.indexOf(s) !== -1;
+};
+
+String.prototype.isIn = function isIn(o) {
+    /*<debug*/py.raiseNone(o);/*debug>*/
+    if (py.isinstance(o, String)) {
+        return o.indexOf(this) !== -1;
+    } else {
+        return Object.prototype.isIn.call(this, o);
+    }
+};

@@ -36,11 +36,13 @@ var class_super = function(_class) {
         var fname;
         if (py.isinstance(args, String)) {
             fname = args;
+            real_args = real_args || [];
         } else {
             /*<debug*/try {/*debug>*/
                  fname = args.callee.__name__;
             /*<debug*/ } catch (err) {
-                 throw Error("$super first argument must be the JavaScript variable 'arguments':"+ err);
+                 throw Error("$super first argument must be the JavaScript vari"+
+                             "able 'arguments':"+ err);
              }/*debug>*/
         }
         var f = py.$super(_class, this, fname);
@@ -83,13 +85,21 @@ py.declare = function declare(name, parents, obj) {
     });
 
     _class.prototype.$super = class_super(_class);
-    window[name] = _class;
+    var parts = name.split('.');
+    if (parts.length > 1) {
+        name = parts.pop();
+        var obj = {};
+        obj[name] = _class;
+        py.extendNamespace('.'.join(parts), obj);
+    } else {
+        window[name] = _class;
+    }
     return _class;
 };
 })();
 
 py.$super = function $super(_class, obj, f) {
-    var _parents = _class.prototype.__parents__.reverse(),
+    var _parents = _class.prototype.__parents__.slice().reverse(),
         it = _parents.__iter__(),
         self = this;
     while (true) {

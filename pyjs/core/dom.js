@@ -6,8 +6,10 @@
 
 /**
  * Dom utilities
- * @namespace py.dom
+ * @namespace
+ * @name py.dom
  */
+
 py.extendNamespace('py.dom', {
     /** @lends py.dom */
 
@@ -39,7 +41,7 @@ py.extendNamespace('py.dom', {
     /**
      * Set or get attribute(s) of an elements
      * @param {String|Element} el the node or node id
-     * @param {Object|Array|String} if it's an object, it will set all pairs to
+     * @param {Object|Array|String} attr If it's an object, it will set all pairs to
      *                              the node. If it's an array, it will return an
      *                              object of attributes values. if it's a string,
      *                              it will return the value or set the new one if
