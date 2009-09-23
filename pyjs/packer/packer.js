@@ -18,8 +18,8 @@ py.extendNamespace('py.packer', {
 
     /** @lends py.packer */
 
-    RE_IMPORT: /py\.importModule\(["'][\w\._]+["']\)\s*;/g,
-    RE_MODULE: /.*['"]([\w\._]+)["'].*/,
+    RE_IMPORT: /py\.importModule\(["'][\w\.\-_]+["']\)\s*;/g,
+    RE_MODULE: /.*['"]([\w\.\-_]+)["'].*/,
 
     params: {
         lvl: 2,
@@ -64,9 +64,9 @@ py.extendNamespace('py.packer', {
     _applyParams: function(src) {
         this.params.remove.iter(function(flag) {
             var re = new RegExp(
-                '(/\*<'+flag+'\*/|//<'+flag+')'+
+                '(/\\*<'+flag+'\\*/|//<'+flag+')'+
                 '[\\s\\S]*?'+
-                '(/\*'+flag+'>\*/|//'+flag+'>)',
+                '(/\\*'+flag+'>\\*/|//'+flag+'>)',
                 'g'
             );
             log('Remove flag : '+flag);

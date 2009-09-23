@@ -236,6 +236,29 @@ py = {
         } else {
             eval(text);
         }
+    },
+
+
+    _onload_fired: false,
+    _onload_callbacks: [],
+
+    /**
+     * Add a function to be fired when dom is ready
+     * @param {Function} f function to fire
+     */
+    addOnLoad: function addOnLoad(f) {
+        // It is py.browser._onLoad that use _onload_callbacks
+        // and set _onload_fired to true
+        /*<debug*/
+        if (typeof f != "function") {
+            throw TypeError('f must be a function');
+        }
+        /*debug>*/
+        if (this._onload_fired) {
+            f();
+        } else {
+            this._onload_callbacks.push(f);
+        }
     }
 
 };

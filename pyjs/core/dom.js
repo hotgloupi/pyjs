@@ -14,6 +14,16 @@ py.extendNamespace('py.dom', {
     /** @lends py.dom */
 
     /**
+     * Get element by ID
+     * @param {String|Element} id The node id
+     * @return {Element} node found or Null
+     */
+    byId: function byId(id) {
+        /*<debug*/py.raiseNone(id);/*debug>*/
+        return document.getElementById(id) || null;
+    },
+
+    /**
      * Create an Element
      * @param {String} tag Tag name
      * @param {Object} [obj] attributes of the node
@@ -36,6 +46,21 @@ py.extendNamespace('py.dom', {
             attrs.iteritems(el.attr.bind(el));
         }
         return el;
+    },
+
+    /**
+     * Destroy a node (remove it completely from the DOM)
+     * @param {Element|String} node The node or its ID
+     */
+    destroyElement: function destroyElement(node) {
+        /*<debug*/py.raiseNone(node);/*debug>*/
+        node = py.isinstance(node, String) ? py.dom.byId(node) : node;
+        //<debug
+        if (py.isNone(node) || !py.isinstance(node, Element)) {
+            throw TypeError('node must be a node or a node ID');
+        }
+        //debug>
+        node.parentNode.removeChild(node);
     },
 
     /**

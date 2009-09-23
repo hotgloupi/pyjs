@@ -6,7 +6,7 @@
  *      - redefine document.createElement
  ****************************************************************************/
 
-(function(){
+py.addOnLoad(function() {
     // Creation of a <style> tag
     var head = py.doc.getElementsByTagName('head')[0],
         css_node = py.doc.createElement('style');
@@ -44,4 +44,4 @@
     };
 
     //TODO getElementsByName
-})();
+});
