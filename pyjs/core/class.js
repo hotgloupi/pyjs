@@ -8,7 +8,7 @@ var _reserved_names = [
 
 py.declareFromBuiltin = function(name, _parent, obj) {
     var _class = function() {
-        _class.prototype.__init__.apply(this, arguments);
+        this.__init__.apply(this, arguments);
     };
     if (_parent) {
         _class.prototype = new _parent();

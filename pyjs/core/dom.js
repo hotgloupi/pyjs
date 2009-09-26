@@ -82,9 +82,9 @@ py.extendNamespace('py.dom', {
         var node = py.isinstance(el, String) ? document.getElementById(el) : el;
         //<debug
         if (py.isinstance(el, String) && py.isNone(node)) {
-            throw ValueError('The ID '+el+' is not found');
+            throw new ValueError('The ID '+el+' is not found');
         } else if (!py.isinstance(el, Element, String) ) {
-            throw ValueError('el must be a string or an Element');
+            throw new ValueError('el must be a string or an Element');
         }
         //debug>
 
@@ -130,9 +130,9 @@ py.extendNamespace('py.dom', {
 
         //<debug
         if (py.isinstance(el, String) && py.isNone(node)) {
-            throw ValueError('The ID '+el+' is not found');
+            throw new ValueError('The ID '+el+' is not found');
         } else if (!py.isinstance(el, Element, String) ) {
-            throw ValueError('el must be a string or an Element');
+            throw new ValueError('el must be a string or an Element');
         }
         //debug>
 
