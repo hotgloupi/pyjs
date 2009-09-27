@@ -6,7 +6,7 @@
 
 
 py.declare('py.defer.AlreadyCalledError', PyError, {message: 'Deferred already called'});
-py.declare('py.defer.DeferredFailure', null, {});
+py.declare('py.defer.DeferredFailure', PyError, {});
 
 (function(){
     var current_id = 0;
