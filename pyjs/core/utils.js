@@ -40,5 +40,25 @@ py.update({
             ref = ref[part];
         });
         ref.update(obj);
+    },
+
+    /**
+     * Build url with parameters
+     * @param {String} url
+     * @param {Object} params
+     * @returns {String}
+     */
+    buildUrl: function buildUrl(url, params) {
+        var parts;
+        if (py.notNone(params) && py.isinstance(params, Object)) {
+            params.iteritems(function(k, v) {
+                parts.append(
+                    encodeURIComponent(k) + '=' + encodeURIComponent(v)
+                );
+            });
+            return url + (url.indexOf('?') !== -1 ? '&' : '?') + '&'.join(parts);
+        } else {
+            return url;
+        }
     }
 });

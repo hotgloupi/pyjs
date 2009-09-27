@@ -146,7 +146,7 @@ py.declare('py.defer.DeferredFailure', PyError, {});
                 while (this.callbacks.length > 0) {
                     var item = this.callbacks.shift(),
                         callback, args, res;
-                    if (!py.isinstance(this.last_result, py.defer.DeferredFailure)) {
+                    if (!py.isinstance(this.last_result[0], py.defer.DeferredFailure)) {
                         callback = item[0][0];
                         args = item[0][1];
                     } else {
