@@ -55,11 +55,17 @@ var class_super = function(_class) {
 };
 
 py.declare = function declare(name, parents, obj) {
-
     var _class = function() {
         _class.prototype.__init__.apply(this, arguments);
     };
     _class.prototype.__class__ = name;
+    _class.prototype.__repr__ = function() {
+        return '<Class '+this.__class__+'>';
+    };
+    _class.prototype.toString = function() {
+        return py.repr(this);
+    };
+
     var _parents = parents || [];
     if (!py.isinstance(_parents, Array)) {
         _parents = [parents];
@@ -75,15 +81,15 @@ py.declare = function declare(name, parents, obj) {
             }
         });
     });
+
     obj.iteritems(function(key, val) {
         if (key.isIn(_reserved_names)) {return;}
         if (key === 'constructor') {return;}
         _class.prototype[key] = val;
-        if (py.isinstance(val, Function)) {
+        if (py.notNone(val) && py.isinstance(val, Function)) {
             _class.prototype[key].__name__ = key;
         }
     });
-
     _class.prototype.$super = class_super(_class);
     var parts = name.split('.');
     if (parts.length > 1) {
@@ -94,6 +100,7 @@ py.declare = function declare(name, parents, obj) {
     } else {
         window[name] = _class;
     }
+
     return _class;
 };
 })();
