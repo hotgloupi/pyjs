@@ -4,4 +4,5 @@
  * @version 0.1
  */
 
-Boolean.prototype.__class__ = "Boolean";
+Boolean.prototype.__name__ = "Boolean";
+Boolean.prototype.__class__ = Boolean;

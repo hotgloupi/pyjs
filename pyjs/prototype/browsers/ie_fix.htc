@@ -1,5 +1,6 @@
 
 <PUBLIC:COMPONENT>
+    <PUBLIC:PROPERTY NAME="__name__" INTERNALNAME="___name__" />
     <PUBLIC:PROPERTY NAME="__class__" INTERNALNAME="___class__" />
     <PUBLIC:METHOD NAME="isIn" INTERNALNAME="_isIn" />
     <PUBLIC:METHOD NAME="contains" INTERNALNAME="_contains" />
@@ -13,7 +14,8 @@
     <PUBLIC:METHOD NAME="getStyles" INTERNALNAME="_getStyles" />
     <script type="text/javascript">
         var el = new Element;
-        ___class__ = "Element";
+        ___name__ = "Element";
+        ___class__ = Element;
         _isIn = el.isIn;
         _contains = el.contains;
         ___setitem__ = el.__setitem__;

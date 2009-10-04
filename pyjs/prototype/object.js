@@ -14,12 +14,13 @@
 
 
 /**
- * @property {String} __class__ The object class
+ * @property {String} __name__ The object class
  * @default "Object"
  * @private
  * @lends Object.prototype
  */
-Object.prototype.__class__ = 'Object';
+Object.prototype.__name__ = 'Object';
+Object.prototype.__class__ = Object;
 
 /**
  * Returns string representation of the object
@@ -27,7 +28,7 @@ Object.prototype.__class__ = 'Object';
  * @returns {String}
  */
 Object.prototype.__str__ = function() {
-    return '<Class ' + this.__class__+' ('+this.__repr__()+')>';
+    return '<Class ' + this.__name__+' ('+this.__repr__()+')>';
 };
 
 /**
@@ -43,12 +44,6 @@ Object.prototype.__repr__ = function() {
     return "{" + (', ').join(pairs) + "}";
 };
 
-/**
- * This function is evaluated in all Object creation
- * Do nothing for Object, but your own class shoud use it
- * @private
- */
-Object.prototype.__init__ = function() {};
 
 /**
  * Specific implementation for Object. It returns an `Iterable` Object
@@ -221,12 +216,7 @@ Object.prototype.items = function items() {
  * @returns {Boolean}
  */
 Object.prototype.equals = function equals(obj) {
-    //<debug
-    if (typeof obj === "undefined") {
-        throw new TypeError("obj arguments if undefined");
-    }
-    //debug>
-    if (obj === null || obj.__class__ !== 'Object') {
+    if (py.isNone(obj) || !py.isinstance(obj, Object)) {
         return false;
     }
     var same = true;
@@ -290,7 +280,7 @@ Object.prototype.contains = function contains(obj) {
 Object.prototype.any = function any(fn, scope) {
     //<debug
     if (!py.isinstance(fn, Function)) {
-        throw new TypeError('iteritems argument must be function !');
+        throw new TypeError('argument must be function !');
     }
     //debug>
     var res = false;
@@ -314,7 +304,7 @@ Object.prototype.any = function any(fn, scope) {
 Object.prototype.all = function all(fn, scope) {
     //<debug
     if (!py.isinstance(fn, Function)) {
-        throw new TypeError('iteritems argument must be function !');
+        throw new TypeError('argument must be function !');
     }
    //debug>
     var res = true;

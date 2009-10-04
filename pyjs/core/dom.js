@@ -152,4 +152,4 @@ py.extendNamespace('py.dom', {
     }
 });
 py.importModule('py.core.dom-query');
-
+py.importModule('py.core.document');

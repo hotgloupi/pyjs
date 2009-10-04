@@ -12,10 +12,11 @@
  */
 
 /**
- * @property {String} __class__ The object class
+ * @property {String} __name__ The object class
  * @private
  */
-Array.prototype.__class__ = 'Array';
+Array.prototype.__name__ = 'Array';
+Array.prototype.__class__ = Array;
 
 /**
  * Returns the number of contained objects
@@ -103,7 +104,7 @@ Array.prototype.next = function next() {
  * @see Object#equals
  */
 Array.prototype.equals = function equals(a) {
-    if (py.isNone(a) || a.__class__ !== 'Array' || this.__len__() !== a.__len__()) {
+    if (py.isNone(a) || a.__name__ !== 'Array' || this.__len__() !== a.__len__()) {
         return false;
     }
     var same = true;

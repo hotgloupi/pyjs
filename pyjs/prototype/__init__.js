@@ -6,6 +6,5 @@ py.importModule('py.prototype.element');
 py.importModule('py.prototype.error');
 py.importModule('py.prototype.function');
 py.importModule('py.prototype.globals');
-py.importModule('py.prototype.document');
 py.importModule('py.prototype.boolean');
 

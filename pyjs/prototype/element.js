@@ -18,10 +18,11 @@ if (typeof Element === "undefined") {
 }
 
 /**
- * @property {String} __class__ The object class
+ * @property {String} __name__ The object class
  * @private
  */
-Element.prototype.__class__ = "Element";
+Element.prototype.__name__ = "Element";
+Element.prototype.__class__ = Element;
 
 /**
  * Check in an element is child of another node

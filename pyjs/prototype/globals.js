@@ -106,12 +106,13 @@ var methods = {
         py.raiseNone(obj);
         py.raiseNone(_class);
         /*debug>*/
-        var l = arguments.length;
+        var l = arguments.length,
+            name = obj.__class__.prototype.__name__;
         if (l === 2) {
-            return obj.__class__ === _class.prototype.__class__;
+            return name === _class.prototype.__name__;
         } else {
             for (; l>1; l -=1) {
-                if (obj.__class__ === arguments[l-1].prototype.__class__) {
+                if (name === arguments[l-1].prototype.__name__) {
                     return true;
                 }
             }

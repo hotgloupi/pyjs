@@ -13,10 +13,11 @@
 
 
 /**
- * @property {String} __class__ The object class
+ * @property {String} __name__ The object class
  * @private
  */
-String.prototype.__class__ = 'String';
+String.prototype.__name__ = 'String';
+String.prototype.__class__ = String;
 
 /**
  * Returns string representation of the object
@@ -44,7 +45,7 @@ String.prototype.__repr__ = function() {
  */
 String.prototype.equals = function(s) {
     return s !== null &&
-           s.__class__ === 'String' &&
+           s.__name__ === 'String' &&
            this.toString() === s.toString();
 };
 
@@ -73,7 +74,7 @@ String.prototype.__len__ = function() {
         this._str = s;
         this._len = s.length;
         this._index = 0;
-        this.__class__ = 'StringIterator';
+        this.__name__ = 'StringIterator';
     }
     StringIterator.prototype.next = function next() {
         if (this._index < this._len) {
