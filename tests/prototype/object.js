@@ -10,7 +10,6 @@ function setUp() {
 function base() {
     assert('__class__' in a);
     assertFalse(a.hasOwnProperty('__class__'));
-    assert(a.__class__ === 'Object');
     assert(py.isinstance(a, Object));
 }
 

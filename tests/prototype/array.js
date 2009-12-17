@@ -15,11 +15,8 @@ function setUp() {
 
 
 function instance() {
-    assert(a.__class__ === 'Array');
     assert(py.isinstance(a, Array));
-    assert(b.__class__ === 'Array');
     assert(py.isinstance(b, Array));
-    assert(c.__class__ === 'Array');
     assert(py.isinstance(c, Array));
 }
 

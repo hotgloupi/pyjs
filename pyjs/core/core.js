@@ -57,17 +57,26 @@ py = {
 	},
 
 	_initPyModulesPath: function() {
-		var scripts = document.getElementsByTagName('script'),
-			py_src = null, src;
-		for (var i=scripts.length-1; i>-1; i--) {
-			src = scripts[i].getAttribute('src');
+        var header = document.getElementsByTagName('header')[0],
+            scripts = [],
+            py_src = null,
+            src,
+            i;
+        if (!header)
+            header = document.childNodes[0].childNodes[0];
+        for (i = 0; i< header.childNodes.length; i++)
+            if (header.childNodes[i].tagName &&
+                header.childNodes[i].tagName.toLowerCase() == 'script')
+                scripts.push(header.childNodes[i]);
+        for (i=scripts.length-1; i>-1; i--) {
+            src = scripts[i].getAttribute('src');
 			if (scripts[i].src.indexOf('pyjs/core/core.js') != -1) {
 				py_src = src;
 				break;
 			}
 		}
 		if (!py_src) {
-			//TODO: pyjs not found !
+			throw new Error("PyJS module URL not found !");
 		} else {
 			//TODO: external load
 			py._modules_path.py = py_src.replace('core/core.js', '');
