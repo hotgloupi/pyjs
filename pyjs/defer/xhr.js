@@ -1,7 +1,7 @@
 /**
  * @fileOverview XMLHTTPRequest manipulation
  * @author <a href="mailto:raphael.londeix@gmail.com">Raphaël Londeix</a>
- * @version 0.1
+ * @version 0.2
  */
 
 py.importModule('py.defer.deferred');
