@@ -5,12 +5,16 @@
 */
 
 if (typeof console != "undefined") {
-    log = function(){console.log.apply(console, arguments);};
-    warn = function(){console.warn.apply(console, arguments);};
+    if (typeof console.log.apply != "undefined") {
+        log = function(){try{console.log.apply(console, arguments);}catch(err){}};
+        warn = function(){try{console.warn.apply(console, arguments);} catch(err){}};
+    } else {
+        log = console.log;
+        warn = console.warn;
+    }
 } else {
     log = warn = function(){};
 }
-
 
 /**
  * Global PyJS namespace
@@ -32,16 +36,23 @@ py = {
         'py.core.core': true // this is the name of this module !
     },
 
+    // modules to be loaded
+    _pending_modules: [],
+
     /** alias of document */
     doc: null,
 
     /** alias of body */
-	body: null,
+    body: null,
 
-	__init__: function() {
-		this._findGlobals();
-		this._initPyModulesPath();
-	},
+    _init_fired: false,
+
+    __init__: function() {
+        log("Loading PyJS");
+      this._findGlobals();
+      this._initPyModulesPath();
+      this._init_fired = true;
+    },
 
 	_findGlobals: function() {
 		//TODO complete for browser compatibility
@@ -54,16 +65,21 @@ py = {
                 }
             }
         }
-	},
+    },
 
-	_initPyModulesPath: function() {
-        var header = document.getElementsByTagName('header')[0],
+    getHeader: function() {
+        var h = document.getElementsByTagName('head')[0];
+        if (!h)
+            h = document.documentElement.firstChild;
+        return (h);
+    },
+
+    _initPyModulesPath: function() {
+        var header = this.getHeader(),
             scripts = [],
             py_src = null,
             src,
             i;
-        if (!header)
-            header = document.childNodes[0].childNodes[0];
         for (i = 0; i< header.childNodes.length; i++)
             if (header.childNodes[i].tagName &&
                 header.childNodes[i].tagName.toLowerCase() == 'script')
@@ -167,7 +183,10 @@ py = {
      */
     importModule: function(/*String*/ name) {
         if (this._loaded_modules[name]) {return;}
-
+        if (this._init_fired === false) {
+            this._pending_modules.push(name); // append not necessarily available
+            return ;
+        }
         log('import module: ',name);
         var src = this.loadJs(py.getModuleUrl(name));
         try {
@@ -272,16 +291,26 @@ py = {
 
 };
 py.global = this;
+var __init_pyjs_interval__ = setInterval(function() {
+    var early_loading = false;
+    window.onload = function() {
+        early_loading = true;
+    }
+    if (!py.getHeader())
+        return;
+    clearInterval(__init_pyjs_interval__);
+    py.__init__();
+    py.importModule('py.prototype.__init__');
+    py.importModule('py.core.class');
+    py.importModule('py.core.error');
+    py.importModule('py.core.utils');
+    py.importModule('py.core.browser');
+    py.importModule('py.core.dom');
+    if (py.config.withGlobals === true) {
+        py.importModule('py.core.globals');
+    }
+    py._pending_modules.iter(py.importModule.bind(py));
+    if (early_loading)
+        py.browser._onLoad();
+}, 20);
 
-py.__init__();
-py.importModule('py.prototype.__init__');
-py.importModule('py.core.class');
-py.importModule('py.core.error');
-
-py.importModule('py.core.utils');
-py.importModule('py.core.browser');
-py.importModule('py.core.dom');
-
-if (py.config.withGlobals === true) {
-    py.importModule('py.core.globals');
-}

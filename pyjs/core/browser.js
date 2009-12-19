@@ -385,7 +385,11 @@ py.browser.update({
         /* for Internet Explorer */
         /*@cc_on @*/
         /*@if (@_win32)
-          document.write("<script id=__ie_onload defer src=javascript:void(0)><\/script>");
+         log("special DOMContentLoaded for IE");
+         var scrpt = document.createElement("<script id=\"__ie_onload\" defer src=\"\/javascript:void(0);\"><\/script>");
+         log("spy created");
+          py.getHeader().appendChild(scrpt);
+         log("spy inserted");
           this._onload_ie_script = document.getElementById("__ie_onload");
           this._onload_ie_script.onreadystatechange = function() {
               if (this.readyState == "complete") {

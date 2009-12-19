@@ -49,13 +49,14 @@ py.update({
      * @returns {String}
      */
     buildUrl: function buildUrl(url, params) {
-        var parts;
+        var parts = [];
         if (py.notNone(params) && py.isinstance(params, Object)) {
             params.iteritems(function(k, v) {
                 parts.append(
                     encodeURIComponent(k) + '=' + encodeURIComponent(v)
                 );
             });
+            alert("url: "+ url + (url.indexOf('?') !== -1 ? '&' : '?') + '&'.join(parts));
             return url + (url.indexOf('?') !== -1 ? '&' : '?') + '&'.join(parts);
         } else {
             return url;

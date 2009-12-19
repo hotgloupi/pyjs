@@ -71,9 +71,9 @@ py.declare('py.defer.XmlHttpRequest', null, {
         var o = this.options,
             url = py.buildUrl(o.url, o.query);
         if (py.notNone(o.username)) {
-            this.xhr.open(o.method, o.url, true, o.username, o.password);
+            this.xhr.open(o.method, url, true, o.username, o.password);
         } else {
-            this.xhr.open(o.method, o.url, true);
+            this.xhr.open(o.method, url, true);
         }
         this.xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         if (py.notNone(o.headers)) {
@@ -111,7 +111,7 @@ py.declare('py.defer.XmlHttpRequest', null, {
 
 py.extendNamespace('py.defer', {
 
-    xhrGet: function(params) {
+    _xhrMethod: function(params, method) {
         /*<debug*/
         py.raiseNone(params);
         if (!py.isinstance(params, String, Object)) {
@@ -121,7 +121,7 @@ py.extendNamespace('py.defer', {
         if (py.isinstance(params, String)) {
             params = {url: params};
         }
-        params.method = 'GET';
+        params.method = method;
         var d = new py.defer.Deferred(),
             _onload = params.onLoad,
             _onerror = params.onError;
@@ -131,11 +131,38 @@ py.extendNamespace('py.defer', {
             d.addCallbacks({callback: _onload, errback: _onerror});
         } else if (py.notNone(_onerror)) {
             d.addCallbacks({
-                callback: function(res, xhr) { return r;},
+                callback: function(res, xhr) { return res;},
                 errback: _onerror
             });
         }
         new py.defer.XmlHttpRequest(params);
         return d;
+    },
+
+    xhrGet: function xhrGet(params) {
+        return (this._xhrMethod(params, 'GET'));
+    },
+
+    xhrPost: function xhrPost(params) {
+        /*<debug*/
+        if (!py.isinstance(params, Object) || py.isNone(params.query)) {
+            throw new ValueError("params must be an object and have a key 'query'");
+        }
+        /*debug>*/
+        var parts = [];
+        params.query.iteritems(function(k, v) {
+            parts.append(
+                encodeURIComponent(k) + '=' + encodeURIComponent(v)
+            );
+        });
+        params.content = '&'.join(parts);
+        if (py.isNone(params.headers))
+            params.headers = [];
+        params.headers.append(["Content-Type", "application/x-www-form-urlencoded"]);
+        params.headers.append(["Content-Length", py.len(params.content)]);
+        delete params["query"];
+        return (this._xhrMethod(params, 'POST'));
     }
-})
+});
+
+
