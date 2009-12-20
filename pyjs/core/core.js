@@ -312,7 +312,10 @@ var __init_pyjs_interval__ = setInterval(function() {
         py.importModule('py.core.globals');
     }
     py._pending_modules.iter(py.importModule.bind(py));
-    if (early_loading)
+    if (early_loading) {
+        warn("Early loading, manual _onLoad");
         py.browser._onLoad();
+    }
+
 }, 20);
 

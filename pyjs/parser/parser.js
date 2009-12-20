@@ -47,6 +47,7 @@ py.declare('py.parser.Parser', null, {
         if (py.len(this._handlers) === 0)
             throw Error("Cannot parse anything no handlers are defined");
         element = this.getNext(null, elements, 0);
+        if (py.isNone(element)) warn("stupid parsing ?");
         while (py.notNone(element)) {
             this._handlers.iter(function(hdlr) {
                 if (hdlr.match(element, elements))

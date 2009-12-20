@@ -118,19 +118,18 @@ py.declare = function declare(name, parents, obj) {
 (function(){
 
     var superMixin = function(_class, obj) {
-
+      throw "SuperMixin not implemented";
     };
 
     var superFunction = function(_class, obj, f) {
         var _parents = _class.prototype.__bases__.slice().reverse(),
-            it = _parents.__iter__(),
-            self = this;
+            it = _parents.__iter__();
         while (true) {
             try {
                 var p = it.next();
                 if (p.prototype[f] && py.isinstance(p.prototype[f], Function)) {
                     return function() {
-                        p.prototype[f].apply(self, arguments);
+                        p.prototype[f].apply(obj, arguments);
                     };
                 }
             } catch (err) {
