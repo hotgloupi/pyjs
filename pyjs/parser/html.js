@@ -32,6 +32,7 @@ py.declare('py.parser.HTMLElementHandler', [py.parser.Handler], {
 
 });
 
+
 py.declare('py.parser.HTMLParser', [py.parser.Parser], {
 
     __init__: function() {
@@ -48,5 +49,6 @@ py.declare('py.parser.HTMLParser', [py.parser.Parser], {
         if (element.parentNode.isIn(elements))
             return (element.parentNode);
         return (null);
-    }
-});
+      }
+  });
+

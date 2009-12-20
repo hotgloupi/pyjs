@@ -173,16 +173,17 @@ Element.prototype.connect = function connect(str, func) {
         throw new ValueError("The event must starts with 'on', as 'onload'");
     }
     //debug>
-    var old = this.attr(str), self = this;
+    var old = this.attr(str),
+        self = this;
     this.attr(str, function(evt) {
-        if (py.isNone(evt) {
+        if (py.isNone(evt)) {
             evt = window.event;
         }
-        if (py.notNone(old) {
+        if (py.notNone(old)) {
             old.call(self, evt);
         }
         func.call(self, evt);
-    }
+    });
 };
 
 /**

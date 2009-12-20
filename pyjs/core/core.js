@@ -193,7 +193,9 @@ py = {
             this.globalEval(src);
         } catch (err) {
             // TODO better error report
+            this._pending_modules.push(name);
             throw "Error while loading module " + name + ' : ' + err;
+            return ;
         }
         this._loaded_modules[name] = true;
 	},

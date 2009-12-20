@@ -86,7 +86,7 @@ py.declare = function declare(name, parents, obj) {
         pclass.prototype.iteritems(function(key, val) {
             if (key.isIn(_reserved_names)) {return;}
             _class.prototype[key] = val;
-            if (py.isinstance(val, Function)) {
+            if (py.notNone(val) && py.isinstance(val, Function)) {
                 _class.prototype[key].__name__ = key;
             }
         });

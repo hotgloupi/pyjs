@@ -21,7 +21,7 @@ py.declare('py.parser.Handler', null, {
 });
 
 
-py.declare('py.parser.Parser', {
+py.declare('py.parser.Parser', null, {
     _handlers: null,
 
     __init__: function() {
