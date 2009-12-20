@@ -119,6 +119,34 @@ Element.prototype.attr = function(/*String*/ attribute, /*String?*/ value) {
     else {this.__setitem__(attribute, value);}
 };
 
+
+// TODO add to ie
+/**
+ * Return true if the element has the class
+ * @param {String} str Class name to test
+ * @returns {Boolean}
+ */
+Element.prototype.hasClass = function(str) {
+    var tab = this.className.toString().split(' ');
+    return tab.contains(str);
+};
+
+/**
+ * Add a class to an element
+ * @param {String} str Class name to add
+ */
+Element.prototype.addClass = function(str) {
+    if (!this.hasClass(str)) {
+        this.className += ' ' + str;
+    }
+};
+
+Element.prototype.removeClass = function(str) {
+    var old = this.className.toString().split(' '),
+        res = old.filter(function(cls) { return (str !== cls); });
+    this.className = ' '.join(res);
+};
+
 /**
  * Select an array of nodes with CSS2 selector inside the element
  * @param {String} selectors CSS2 selectors (separated by comma)
@@ -128,6 +156,34 @@ Element.prototype.query = function query(selectors) {
     return py.dom.query(selectors, this);
 };
 
+//TODO: Something better, return an object that can make easy disconnect
+/**
+ * connect a function to an element's event
+ * @param {String} event_name The event name, starting with 'on'
+ * @param {Function} func the function to execute
+ */
+Element.prototype.connect = function connect(str, func) {
+    //<debug
+    py.raiseNone(str);
+    py.raiseNone(func);
+    if (!py.isinstance(str, String) || !py.isinstance(func, Function)) {
+        throw new TypeError("The event must be a string, and connector must be a Function");
+    }
+    if (!str.startswith('on')) {
+        throw new ValueError("The event must starts with 'on', as 'onload'");
+    }
+    //debug>
+    var old = this.attr(str), self = this;
+    this.attr(str, function(evt) {
+        if (py.isNone(evt) {
+            evt = window.event;
+        }
+        if (py.notNone(old) {
+            old.call(self, evt);
+        }
+        func.call(self, evt);
+    }
+};
 
 /**
  * Set multiples styles

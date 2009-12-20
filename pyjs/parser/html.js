@@ -24,23 +24,24 @@ py.declare('py.parser.HTMLElementHandler', [py.parser.Handler], {
         if (py.notNone(this.args.tag) && (this.args.tag != element.tagName))
             return ;
         if (py.notNone(this.args.classes)) {
-            if (!this.args.classes.all(element.haveClass.bind(element))) /* MERDE EN BARRE */
+            if (!this.args.classes.all(element.hasClass.bind(element)))
                 return;
         }
+        this.onMatch(element, elements);
     }
 
 });
 
 py.declare('py.parser.HTMLParser', [py.parser.Parser], {
 
-    __init__: function(root_node) {
+    __init__: function() {
         this.$super(arguments);
     },
 
     getNext: function(element, elements, idx) {
         if (py.isNone(element))
             return (elements);
-        if (py.notNone(element.firstChild)
+        if (py.notNone(element.firstChild))
             return (element.firstChild);
         if (py.notNone(element.nextSibling))
             return (element.nextSibling);

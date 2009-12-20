@@ -10,7 +10,7 @@
  * @namespace
  */
 
-py.declare('py.parser.Handler', {
+py.declare('py.parser.Handler', null, {
     match: function match(element, elements) {
         return false;
     },
@@ -56,7 +56,4 @@ py.declare('py.parser.Parser', {
             element = this.getNext(element, elements, i);
         }
     }
-
-
-
 });
