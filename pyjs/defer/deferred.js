@@ -4,6 +4,12 @@
  * @version 0.1
  */
 
+/**
+ * defer namespace for Deferred class and derived ones
+ * @namespace
+ * @name py.defer
+ */
+
 
 py.declare('py.defer.AlreadyCalledError', PyError, {message: 'Deferred already called'});
 py.declare('py.defer.DeferredFailure', PyError, {});
@@ -13,6 +19,8 @@ py.declare('py.defer.DeferredFailure', PyError, {});
     function nextId() { return current_id++; }
 
     py.declare('py.defer.Deferred', null, {
+        /** @lends py.defer.Deferred.prototype */
+
         callbacks: null,
         id: -1,
         called: false,
@@ -28,6 +36,11 @@ py.declare('py.defer.DeferredFailure', PyError, {});
             )+'>';
         },
 
+        /**
+         * Deferred class
+         * @constructs
+         * @param {Function} [canceller] canceller function
+         */
         __init__: function (canceller) {
             this.callbacks = [];
             this.id = nextId();

@@ -19,6 +19,7 @@ py.declare('py.defer.XmlHttpRequest', null, {
      * @param {String} [args.password] Password when authentication is needed
      * @param {Array[]} [args.headers] Additionnal headers ([name, value])
      * @param {String} [args.mime_type] Mime type to use
+     * @param {Boolean} [args.prevent_cache] set this to true to prevent browser caching
      * @param {Function} [args.onLoad] callback when data is available
      * @param {Function} [args.onError] callback when error happened
      */
@@ -68,8 +69,17 @@ py.declare('py.defer.XmlHttpRequest', null, {
     },
 
     _fire: function () {
-        var o = this.options,
-            url = py.buildUrl(o.url, o.query);
+        var o = this.options;
+        var url = py.buildUrl(o.url, o.query);
+        if (o.prevent_cache) {
+          var d = new Date();
+          if (!o.url.contains('?')) {
+            o.url += '?';
+          } else {
+            o.url += '&';
+          }
+          o.url += 'prevent_cache='+d.getTime()+'.'+d.getMilliseconds();
+        }
         if (py.notNone(o.username)) {
             this.xhr.open(o.method, url, true, o.username, o.password);
         } else {

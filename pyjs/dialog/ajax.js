@@ -1,0 +1,74 @@
+/**
+ * @fileOverview base class for dialogs
+ * @author <a href="mailto:raphael.londeix@gmail.com"> Raphaël Londeix </a>
+ * @version 0.1
+ */
+
+py.importModule('py.dialog.dialog');
+py.importModule('py.defer.xhr');
+
+py.declare('py.dialog.AjaxMixin', null, {
+
+    _loading_str: "Loading...",
+    _error_str: "Loading error",
+    _defer: null,
+
+    _fetchData: function () {
+        if (py.notNone(this._defer)) {
+            return ;
+        }
+        //<debug
+        if (py.isNone(this._args.url)) {
+            throw new ValueError("Cannot find url in args");
+        }
+        if (!py.isinstance(this._args.url, String)) {
+            throw new TypeError("url must be a String");
+        }
+        //debug>
+        var self = this;
+        this._setContent(this._loading_str);
+        this._defer = py.defer.xhrGet({
+            url: self._args.url,
+            onLoad: self._onLoad.bind(self),
+            onError: self._onError.bind(self)
+        });
+    },
+
+    _onLoad: function _onLoad(res) {
+        this._args.content = res;
+        this._setContent();
+        this._defer = null;
+    },
+
+    _onError: function _onError() {
+        this._args.content = this._error_str;
+        this._setContent();
+        this._defer = null;
+    }
+
+});
+
+/** @class */
+py.declare('py.dialog.AjaxDialog', [py.dialog.Dialog, py.dialog.AjaxMixin], {
+    /** @lends py.dialog.AjaxDialog.prototype */
+
+    /**
+     * Dialog that fetch content from an url
+     * @construct
+     * @augments py.dialog.Dialog
+     * @param {Object} args arguments for the dialog
+     * @param {String} args.url Url to use
+     * @param {Boolean} [args.refresh_on_show] refresh every time show() is called
+     */
+    __init__: function __init__(args) {
+        this.$super(arguments);
+        this._fetchData();
+    },
+
+    show: function() {
+        if (this._args.refresh_on_show === true) {
+            this._fetchData();
+        }
+        this.$super(arguments);
+    }
+});

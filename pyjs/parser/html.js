@@ -6,7 +6,14 @@
 
 py.importModule('py.parser.parser');
 
+/**
+ * Handler to match a HTML Element based on its tag name and classes
+ * @name py.parser.HTMLElementHandler
+ * @class
+ */
 py.declare('py.parser.HTMLElementHandler', [py.parser.Handler], {
+    /** @lends py.parser.HTMLElementHandler */
+
     /**
      * Initialise an html handler
      * @param {Object} args Define matching properties
@@ -36,7 +43,13 @@ py.declare('py.parser.HTMLElementHandler', [py.parser.Handler], {
 });
 
 
+/**
+ * Parser for HTML node
+ * @name py.parser.HTMLParser
+ * @class
+ */
 py.declare('py.parser.HTMLParser', [py.parser.Parser], {
+    /** @lends py.parser.HTMLParser */
 
     __init__: function() {
         this.$super(arguments);

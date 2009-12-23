@@ -5,12 +5,21 @@
  */
 
 /**
- * Parser namespace
- * @name py.parser
+ * parser utilities namespace
  * @namespace
+ * @name py.parser
  */
 
+
+
+/**
+ * Handlers for parsers base class
+ * @name py.parser.Handler
+ * @class
+ */
 py.declare('py.parser.Handler', null, {
+    /** @lends py.parser.Handler */
+
     match: function match(element, elements) {
         return false;
     },
@@ -20,26 +29,39 @@ py.declare('py.parser.Handler', null, {
     },
 });
 
-
+/**
+ * Generic parser class
+ * @name py.parser.Parser
+ * @class
+ */
 py.declare('py.parser.Parser', null, {
+    /** @lends py.parser.Parser */
     _handlers: null,
 
     __init__: function() {
         this._handlers = [];
     },
 
+    /**
+     * Add an handler to the parser
+     * @param {py.parser.Handler} hdlr Handler to add
+     */
     addHandler: function addHandler(hdlr) {
         this._handlers.append(hdlr);
     },
 
     /**
      * Return next element to parse, must be overrided
-     * return null when parsing is done
+     * @param element last parsed element (null for first)
+     * @param elements all elements
+     * @param {Int} idx the element index, starting with 0
+     * @returns {Object|None} next element or null when parsing is done
      */
     getNext: function(element, elements, idx) {},
 
     /**
      * Entry point, should not be overrided
+     * @params elements elements to parse
      */
     parse: function(elements) {
         var element = null,
