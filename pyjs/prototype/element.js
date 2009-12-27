@@ -14,7 +14,7 @@
 // For IE
 if (typeof Element === "undefined") {
     Element = function(){};
-    py.importModule('py.prototype.browsers.ie');
+    py._importModule('py.prototype.browsers.ie');
 }
 
 /**
@@ -29,7 +29,7 @@ Element.prototype.__class__ = Element;
  * @param {Element|String} n a node or id
  * @returns {Boolean}
  */
-Element.prototype.isIn = function(/*Node|String*/ n) {
+Element.prototype.isIn = function isIn(/*Node|String*/ n) {
     /*<debug*/py.raiseNone(n);/*debug>*/
     if (py.isinstance(n, String)) {
         n = document.getElementById(n);
@@ -48,7 +48,7 @@ Element.prototype.isIn = function(/*Node|String*/ n) {
  * @param {Element|String} n node or id
  * @returns {Boolean}
  */
-Element.prototype.contains = function(/*Node|String*/ n) {
+Element.prototype.contains = function contains(/*Node|String*/ n) {
     if (py.isinstance(n, String)) {
         n = document.getElementById(n);
     }
@@ -156,34 +156,116 @@ Element.prototype.query = function query(selectors) {
     return py.dom.query(selectors, this);
 };
 
+
 //TODO: Something better, return an object that can make easy disconnect
 /**
  * connect a function to an element's event
  * @param {String} event_name The event name, starting with 'on'
- * @param {Function} func the function to execute
+ * @param {Object|Function} Scope object or function to execute
+ * @param {Function|String} [func] the function to execute
+ * @returns {py.event.Handler} Handler, needed to disconnect
  */
-Element.prototype.connect = function connect(str, func) {
+Element.prototype.connect = function connect(str, scope, func) {
     //<debug
     py.raiseNone(str);
-    py.raiseNone(func);
-    if (!py.isinstance(str, String) || !py.isinstance(func, Function)) {
-        throw new TypeError("The event must be a string, and connector must be a Function");
+    if (!py.isinstance(str, String)) {
+        throw new TypeError("The event must be a String");
     }
-    if (!str.startswith('on')) {
-        throw new ValueError("The event must starts with 'on', as 'onload'");
+    if (str.startswith('on')) {
+        throw new ValueError("The event must NOT starts with 'on'");
     }
     //debug>
-    var old = this.attr(str),
-        self = this;
-    this.attr(str, function(evt) {
-        if (py.isNone(evt)) {
-            evt = window.event;
+    if (py.notNone(func)) {
+        if (py.isinstance(func, String)) {
+            //<debug
+            if (py.isNone(obj)) {
+                throw new ValueError("scope cannot be None when function is a String");
+            }
+            //debug>
+            func = scope[func];
         }
-        if (py.notNone(old)) {
-            old.call(self, evt);
+        func = func.bind(scope);
+    } else {
+        func = scope;
+        scope = null;
+    }
+    //<debug
+    if (!py.isinstance(func, Function)) {
+        throw new ValueError("given callback is not a function");
+    }
+    //debug>
+    var self = this;
+    function buildFirerer(str, hdlrs) {
+        return (function (e) {
+            var evt = e || window.event;
+            hdlrs.iter(function (hdlr) {
+                /*<debug*/try {/*debug>*/
+                    hdlr.fire([evt]);
+                //<debug
+                } catch(err) {
+                    warn("Handler", hdlr, "of", self, ": '", str, "' failed:", err);
+                }
+                //debug>
+            });
+        });
+    }
+
+    if (py.isNone(this._hdlrs)) {
+        this._hdlrs = {};
+        this._fire_hdlrs = {};
+    }
+    if (py.isNone(this._hdlrs[str])) {
+        this._hdlrs[str] = [];
+        this._fire_hdlrs[str] = buildFirerer(str, this._hdlrs[str]);
+        if (this.addEventListener) {
+            this.addEventListener(str, this._fire_hdlrs[str], false);
+        } else if (this.attachEvent) {
+            obj.attachEvent('on' + str, this._fire_hdlrs[str]);
+        }/*<debug*/ else {
+            throw "Cannot attach event !";
         }
-        func.call(self, evt);
+    }
+    var hdlr = new py.event.Handler(str, self, func)
+    this._hdlrs[str].append(hdlr);
+    return (hdlr);
+};
+
+Element.prototype.disconnect = function disconnect(hdlr) {
+    //<debug
+    if (py.isNone(hdlr) || !py.isinstance(hdlr, py.event.Handler)) {
+        throw new TypeError("Handler must be the result of a previous connect");
+    }
+    if (py.isNone(this._hdlrs) || py.isNone(this._hdlrs[hdlr._event_name])) {
+        throw "Internal Error: Handler refer to an empty connector";
+    }
+    //debug>
+    var idx = -1,
+        str = hdlr._event_name;
+        hdlrs = this._hdlrs[str];
+    hdlrs.iter(function (h, i) {
+        if (h._id === hdlr._id) {
+            idx = i;
+            throw new StopIteration();
+        }
     });
+    if (idx >= 0) {
+        delete hdlrs[idx];
+        hdlrs.splice(idx, 1);
+    } /*<debug*/ else {
+        warn('This handler does not exists anymore !');
+        return ;
+    } /*debug>*/
+    if (py.len(hdlrs) === 0) {
+        delete this._hdlrs[str];
+        if (this.removeEventListener) {
+            this.removeEventListener(str, this._fire_hdlrs[str], false);
+        } else if (this.detachEvent) {
+            this.detachEvent('on' + str, this._fire_hdlrs[str]);
+        } /*<debug*/ else {
+            throw "Cannot detach event !";
+        } /*debug>*/
+        delete this._fire_hdlrs[str];
+    }
 };
 
 /**
@@ -264,6 +346,30 @@ Element.prototype.getStyles = function getStyles(styles) {
         return setter.call(this, k, v);
 
     };
+
+    if (typeof(Element.prototype.getComputedStyle) === "undefined") {
+        /**
+         * Get computed styles
+         * @returns {Object} Computed styles
+         */
+        Element.prototype.getComputedStyle = function getComputedStyle() {
+            var getter;
+            if (this.currentStyle) {
+                getter = function () {
+                    return (this.currentStyle);
+                };
+            } else {
+                var gs = py.doc.defaultView.getComputedStyle;
+                getter = function () {
+                    return (gs(this, null));
+                };
+            }
+            setTimeout(function () {
+                Element.prototype.getComputedStyle = getter;
+            }, 0);
+            return getter.call(this);
+        };
+    }
 
     /**
      * Get Computed style

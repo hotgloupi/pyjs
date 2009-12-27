@@ -28,7 +28,11 @@ Object.prototype.__class__ = Object;
  * @returns {String}
  */
 Object.prototype.__str__ = function() {
-    return '<Class ' + this.__name__+' ('+this.__repr__()+')>';
+    if (py.notNone(this.__name__)) {
+        return '<Class ' + this.__name__+' ('+this.__repr__()+')>';
+    } else {
+        return '<Class `Unknown` ('+this.__repr__()+')>';
+    }
 };
 
 /**

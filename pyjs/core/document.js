@@ -76,6 +76,6 @@
                 }
             });
         }
-//        py.doc.body.removeChild(div);
+        py.doc.body.removeChild(div);
     });
 })();

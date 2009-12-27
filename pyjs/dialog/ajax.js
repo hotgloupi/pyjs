@@ -5,6 +5,7 @@
  */
 
 py.importModule('py.dialog.dialog');
+py.importModule('py.dialog.modal');
 py.importModule('py.defer.xhr');
 
 py.declare('py.dialog.AjaxMixin', null, {
@@ -25,10 +26,12 @@ py.declare('py.dialog.AjaxMixin', null, {
             throw new TypeError("url must be a String");
         }
         //debug>
+        this._content_loaded = false;
         var self = this;
         this._setContent(this._loading_str);
         this._defer = py.defer.xhrGet({
             url: self._args.url,
+            prevent_cache: self._args.prevent_cache,
             onLoad: self._onLoad.bind(self),
             onError: self._onError.bind(self)
         });
@@ -59,6 +62,7 @@ py.declare('py.dialog.AjaxDialog', [py.dialog.Dialog, py.dialog.AjaxMixin], {
      * @param {Object} args arguments for the dialog
      * @param {String} args.url Url to use
      * @param {Boolean} [args.refresh_on_show] refresh every time show() is called
+     * @param {Boolean} [args.prevent_cache] prevent browser caching
      */
     __init__: function __init__(args) {
         this.$super(arguments);
@@ -72,3 +76,30 @@ py.declare('py.dialog.AjaxDialog', [py.dialog.Dialog, py.dialog.AjaxMixin], {
         this.$super(arguments);
     }
 });
+
+
+/** @class */
+py.declare('py.dialog.AjaxModal', [py.dialog.Modal, py.dialog.AjaxMixin], {
+    /** @lends py.dialog.AjaxModalDialog.prototype */
+
+    /**
+     * Dialog that fetch content from an url
+     * @construct
+     * @augments py.dialog.Dialog
+     * @param {Object} args arguments for the dialog
+     * @param {String} args.url Url to use
+     * @param {Boolean} [args.refresh_on_show] refresh every time show() is called
+     */
+    __init__: function __init__(args) {
+        this.$super(arguments);
+        this._fetchData();
+    },
+
+    show: function() {
+        if (this._args.refresh_on_show === true) {
+            this._fetchData();
+        }
+        this.$super(arguments);
+    }
+});
+

@@ -116,7 +116,7 @@ var methods = {
                     return true;
                 }
             }
-            return false
+            return false;
         }
     },
 
@@ -183,10 +183,11 @@ var methods = {
      * @returns {Array} Sorted values in an array
      */
     sorted: function(a, cmp) {
+        var tmp;
         if (py.isinstance(a, Array)) {
-            var tmp = a.slice();
+            tmp = a.slice();
         } else {
-            var tmp = [];
+            tmp = [];
             a.iter(function(i, idx) { tmp[idx] = i; });
         }
         if (py.isNone(cmp)) {

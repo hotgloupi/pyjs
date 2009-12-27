@@ -161,13 +161,53 @@ function useSetGetAttribute(attr) {
     };
 }
 
+
+function setGetValue(set_val) {
+    var tag = this.tagName.toLowerCase(),
+        type = this.attr('type');
+    if (tag == 'select') {
+        if (py.isNone(set_val)) {
+            return (this.options[this.selectedIndex].value);
+        } else {
+            var index = -1;
+            // This is not a real tab ...
+            Array.prototype.slice.call(this.options, null).iter(function (op, idx) {
+                if (op.value == set_val) {
+                    index = idx;
+                    throw new StopIteration();
+                }
+            });
+            //<debug
+            if (index == -1) {
+                throw new ValueError("Cannot find value '"+set_val+"' in this select anchor");
+            }
+            //debug>
+            this.selectedIndex = index;
+        }
+    }
+    if (tag == 'input' && type == 'checkbox') {
+        if (py.isNone(set_val)) {
+            return (this.checked);
+        } else {
+            //<debug
+            if (!py.isinstance(set_val, Boolean)) {
+                throw new TypeError("checkbox value must be a Boolean");
+            }
+            //debug>
+            this.checked = set_val;
+        }
+    }
+    return (this.value);
+}
+
 // Assume all attr are lower cased
 var attributes_maps = {
     base: {
         'content': 'innerHTML',
         'htmlfor': 'for',
         'class': 'className',
-        'style': useSetGetAttribute('style')
+        'style': useSetGetAttribute('style'),
+        'value': setGetValue
     },
 
     'Explorer': {
@@ -331,87 +371,7 @@ py.browser.update({
      */
     getStylesMap: function () {
         return py.browser.getBrowserMapping(styles_maps);
-    },
-
-    _onload_timer: null,
-    _onload_ie_script: null,
-
-    _onLoad: function() {
-        if (py._onload_fired) {return;}
-        py._onload_fired = true;
-
-        if (this._onload_timer) {
-            clearInterval(this._onload_timer);
-        }
-
-        if (this._onload_ie_script){
-            this._onload_ie_script.onreadystatechange = '';
-            this._onload_ie_script = null;
-            var cleanup = setInterval(function() {
-                try { // Strangly fail ...
-                    py.dom.destroyElement("__ie_onload");
-                    clearInterval(cleanup);
-                } catch(e){}
-            }, 400);
-        }
-        while (f = py._onload_callbacks.shift()) {
-            try {
-                f();
-            } catch (err) {
-                warn('Error with callback ' + f.toString() + ' : ', err);
-            }
-        }
-    },
-
-    /*
-     * (c)2006 Jesse Skinner/Dean Edwards/Matthias Miller/John Resig
-     * Special thanks to Dan Webb's domready.js Prototype extension
-     * and Simon Willison's addLoadEvent
-     *
-     * For more info, see:
-     * http://www.thefutureoftheweb.com/blog/adddomloadevent
-     * http://dean.edwards.name/weblog/2006/06/again/
-     * http://www.vivabit.com/bollocks/2006/06/21/a-dom-ready-extension-for-prototype
-     * http://simon.incutio.com/archive/2004/05/26/addLoadEvent
-     */
-    _prepareOnLoadEvent: function() {
-        var init = this._onLoad.bind(this);
-
-        /* for mozilla*/
-        if (document.addEventListener) {
-            document.addEventListener("DOMContentLoaded", init, false);
-        }
-
-        /* for Internet Explorer */
-        /*@cc_on @*/
-        /*@if (@_win32)
-         log("special DOMContentLoaded for IE");
-         var scrpt = document.createElement("<script id=\"__ie_onload\" defer src=\"\/javascript:void(0);\"><\/script>");
-         log("spy created");
-          py.getHeader().appendChild(scrpt);
-         log("spy inserted");
-          this._onload_ie_script = document.getElementById("__ie_onload");
-          this._onload_ie_script.onreadystatechange = function() {
-              if (this.readyState == "complete") {
-                  init(); // call the onload handler
-              }
-          };
-        /*@end @*/
-
-        /* for Safari */
-        if (/WebKit/i.test(navigator.userAgent)) { // sniff
-          this._onload_timer = setInterval(function() {
-            if (/loaded|complete/.test(document.readyState)) {
-              init(); // call the onload handler
-            }
-          }, 50);
-        }
-
-        /* for other browsers */
-        window.onload = init;
     }
 });
-
-py.browser._prepareOnLoadEvent();
 
 })();

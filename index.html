@@ -1,47 +1,63 @@
 <html>
-    <head>
+<head>
 
-        <script type='text/javascript'
-        src='firebug-lite-compressed.js'></script>
+<script type='text/javascript'
+  src='firebug-lite-compressed.js'></script>
 
-<!--
-    <script src="base/object.js"></script>
-    <script src="base/array.js"></script>
-    <script src="base/function.js"></script>
-    <script src="base/string.js"></script>
-    <script src="base/number.js"></script>
-    <script src="base/error.js"></script>
-    <script src="base/class.js"></script>
-	<script src="test.js"></script>
--->
-	<script src="pyjs/core/core.js"></script>
+<script src="pyjs/core/core.js"></script>
 
-    <script>
-        function loadAll() {
-            var urls = [
-                'base/object.js',
-                'base/array.js',
-                'base/function.js',
-                'base/string.js',
-                'base/number.js',
-                'base/class.js',
-                'test.js'
-            ], node;
 
-            for (var i=0, l=urls.length; i<l ; i++) {
-                node = document.createElement('script');
-                node.src = urls[i];
-                document.body.appendChild(node);
-            }
-        }
-    </script>
+<script>
+py.importModule('py.dialog.ajax');
+dialog = null;
+py.addOnLoad(function() {
+  $('show_docs').connect('click', function() {
+    log('pif');
+    if (py.notNone(dialog)) {
+      dialog.destroy();
+    }
+    log('paf');
+    dialog = new py.dialog.AjaxModal({
+      title: 'un formulaire pas comme les autres ...',
+      url: '/pif.html',
+      prevent_cache: true,
+      refresh_on_show: true,
+      onValidate: function(res) {
+        log(res);
+      }
+    });
+    log('pouf');
+    dialog.show();
+  });
+});
+</script>
 
-    </head>
+<style>
+  .pyDialogContent {
+    margin: 10px;
+    border: 20px solid gray;
+  }
+  .pyDialogContainer {
+    padding: 5px;
+  }
+  #box {
+    padding: 10px;
+    margin: 5px;
+    border: 3px solid red;
+  }
+  #para {
+    padding: 3px;
+    border: 5px solid black;
+    margin: 20px;
+  }
+</style>
+</head>
 
-    <body onload="firebug.init();">
-    <div id="box">
-        <h1> Bonjour </h1>
-        <p id="para"> paragraph</p>
-    </div>
-    </body>
+<body onload="firebug.init();">
+<div id="box">
+  <h1> Bonjour </h1>
+  <p id="para"> paragraph</p>
+  <button id="show_docs">Popup !</button>
+</div>
+</body>
 </html>

@@ -56,7 +56,6 @@ py.update({
                     encodeURIComponent(k) + '=' + encodeURIComponent(v)
                 );
             });
-            alert("url: "+ url + (url.indexOf('?') !== -1 ? '&' : '?') + '&'.join(parts));
             return url + (url.indexOf('?') !== -1 ? '&' : '?') + '&'.join(parts);
         } else {
             return url;

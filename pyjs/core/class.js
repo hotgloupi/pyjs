@@ -1,10 +1,16 @@
+/**
+ * @fileOverview Class declaration and inheritance
+ * @author <a href="mailto:raphael.londeix@gmail.com>Raphaël Londeix</a>
+ * @version 0.1
+ */
 
-(function(){
-
-var _reserved_names = [
+py._reserved_names = [
     '__name__',
     '__class__',
-    '__bases__'
+    '__bases__',
+    '__inherited_functions__',
+    '$super',
+    'toString'
 ];
 
 py.declareFromBuiltin = function(name, _parent, obj) {
@@ -32,22 +38,27 @@ py.declareFromBuiltin = function(name, _parent, obj) {
     return _class;
 };
 
-var class_super = function(_class) {
+py._getClassSuper = function(_class) {
+    var inherited_fn = _class.prototype.__inherited_functions__;
     return function(/*arguments|String*/ args, /*Array?*/ real_args) {
         /*<debug*/py.raiseNone(args);/*debug>*/
-        var fname;
+        var fname, f;
         if (py.isinstance(args, String)) {
             fname = args;
             real_args = real_args || [];
         } else {
             /*<debug*/try {/*debug>*/
-                 fname = args.callee.__name__;
+            fname = args.callee.__name__;
             /*<debug*/ } catch (err) {
                  throw new TypeError("$super first argument must be the JavaScript vari"+
-                             "able 'arguments' or a String:"+ err);
+                 "able 'arguments' or a String:"+ err);
              }/*debug>*/
         }
-        var f = py.$super(_class, this, fname);
+        if (fname.isIn(inherited_fn)) {
+            f = py.$super(inherited_fn[fname], this, fname);
+        } else {
+            f = py.$super(_class, this, fname);
+        }
         if (py.notNone(real_args)) {
             return f.apply(null, real_args);
         } else {
@@ -63,12 +74,15 @@ var class_super = function(_class) {
  * @param {Array|Class} [parents] Bases class
  * @param {Object} obj The Class methods and members
  */
-py.declare = function declare(name, parents, obj) {
+py.declare = function(name, parents, obj) {
     var _class = function() {
-        _class.prototype.__init__.apply(this, arguments);
+        if (py.notNone(_class.prototype.__init__)) {
+            _class.prototype.__init__.apply(this, arguments);
+        }
     };
     _class.prototype.__name__ = name;
     _class.prototype.__class__ = _class;
+    _class.prototype.__inherited_functions__ = {};
     _class.prototype.__repr__ = function() {
         return '<Class '+this.__name__+'>';
     };
@@ -84,86 +98,95 @@ py.declare = function declare(name, parents, obj) {
 
     _parents.iter(function(pclass) {
         pclass.prototype.iteritems(function(key, val) {
-            if (key.isIn(_reserved_names)) {return;}
+            if (key.isIn(py._reserved_names)) {return;}
             _class.prototype[key] = val;
             if (py.notNone(val) && py.isinstance(val, Function)) {
+                _class.prototype.__inherited_functions__[key] = pclass;
                 _class.prototype[key].__name__ = key;
             }
         });
     });
 
     obj.iteritems(function(key, val) {
-        if (key.isIn(_reserved_names)) {return;}
+        if (key.isIn(py._reserved_names)) {return;}
         if (key === 'constructor') {return;}
         _class.prototype[key] = val;
         if (py.notNone(val) && py.isinstance(val, Function)) {
+            _class.prototype.__inherited_functions__[key] = _class;
             _class.prototype[key].__name__ = key;
         }
     });
-    _class.prototype.$super = class_super(_class);
+    _class.prototype.$super = py._getClassSuper(_class);
     var parts = name.split('.');
     if (parts.length > 1) {
         name = parts.pop();
-        var obj = {};
-        obj[name] = _class;
-        py.extendNamespace('.'.join(parts), obj);
+        var container = {};
+        container[name] = _class;
+        py.extendNamespace('.'.join(parts), container);
     } else {
         window[name] = _class;
     }
 
     return _class;
 };
-})();
 
-(function(){
+py.superMixin = function(_class, obj) {
+    throw "SuperMixin not implemented";
+};
 
-    var superMixin = function(_class, obj) {
-      throw "SuperMixin not implemented";
-    };
-
-    var superFunction = function(_class, obj, f) {
-        var _parents = _class.prototype.__bases__.slice().reverse(),
-            it = _parents.__iter__();
-        while (true) {
-            try {
-                var p = it.next();
-                if (p.prototype[f] && py.isinstance(p.prototype[f], Function)) {
-                    return function() {
-                        p.prototype[f].apply(obj, arguments);
-                    };
-                }
-            } catch (err) {
-                if (py.isinstance(err, StopIteration)) {
-                    throw new AttributeError(obj.__name__ + ' hasn\'t parent with member '+f);
-                } else {
-                    throw err;
-                }
+py.superFunction = function(_class, obj, f) {
+    var _parents = _class.prototype.__bases__.slice().reverse(),
+    it = _parents.__iter__();
+    while (true) {
+        try {
+            var p = it.next();
+            //<debug
+            log('$super for function "' + f + '" in', p.prototype.__name__, 'for', obj);
+            //debug>
+            if (p.prototype[f] && py.isinstance(p.prototype[f], Function)) {
+                return function super_func() {
+                    var old_super = obj.$super;
+                    obj.$super = p.prototype.$super;
+                    //<debug
+                    try {
+                        //debug>
+                        var res = p.prototype[f].apply(obj, arguments);
+                        //<debug
+                    } catch(err) {
+                        warn('Error while executing "'+p.prototype.__name__+'.'+f+'" for', obj, ':', err);
+                    }
+                    //debug>
+                    obj.$super = old_super;
+                };
+            }
+        } catch (err) {
+            if (py.isinstance(err, StopIteration)) {
+                throw new AttributeError(obj.__name__ + ' has no parent with member '+f);
+            } else {
+                throw err;
             }
         }
     }
+};
 
-    /**
-     * Returns neither parent function of an object, or
-     * an appropriate mixin of parents methods
-     * @param {Class} _class The class from which search of parents
-     * @param {Object} obj The instance
-     * @param {String} [f] The function name to get from bases class. If not
-     *                     specified, function returns a mixin object
-     * @returns {Object|Function} A mixin object or the base function
-     */
-    py.$super = function $super(_class, obj, f) {
-        //<debug
-        py.raiseNone(_class);
-        py.raiseNone(obj);
-        //debug>
-        if (py.notNone(f)) {
-            return superFunction(_class, obj, f);
-        } else {
-            return superMixin(_class, obj);
-        }
-    };
-
-
-})();
-
+/**
+ * Returns neither parent function of an object, or
+ * an appropriate mixin of parents methods
+ * @param {Class} _class The class from which search of parents
+ * @param {Object} obj The instance
+ * @param {String} [f] The function name to get from bases class. If not
+ *                     specified, function returns a mixin object
+ * @returns {Object|Function} A mixin object or the base function
+ */
+py.$super = function $super(_class, obj, f) {
+    //<debug
+    py.raiseNone(_class);
+    py.raiseNone(obj);
+    //debug>
+    if (py.notNone(f)) {
+        return py.superFunction(_class, obj, f);
+    } else {
+        return py.superMixin(_class, obj);
+    }
+};
 

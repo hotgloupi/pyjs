@@ -132,7 +132,7 @@ py.extendNamespace('py.dom', {
         if (py.isinstance(el, String) && py.isNone(node)) {
             throw new ValueError('The ID '+el+' is not found');
         } else if (!py.isinstance(el, Element, String) ) {
-            throw new ValueError('el must be a string or an Element');
+            throw new ValueError('el must be a String or an Element');
         }
         //debug>
 
@@ -147,9 +147,254 @@ py.extendNamespace('py.dom', {
         } else if (py.isinstance(_style, Object)) { // set multiple attributes
             return node.setStyles(_style);
         } else {
-            throw TypeError('_style must a String, an Array or an Object');
+            throw TypeError('_style must be a String, an Array or an Object');
+        }
+    },
+
+    /**
+     * Get or set size of a node
+     * @param {String|Element} el The node
+     * @param {String} [method='outer'] The type of size, can be 'inner' or 'outer'
+     * @param {Object} [set_values] Use this method as a setter, give sizes as an object
+     */
+    layout: function layout(el, method, set_values) {
+        /*<debug*/py.raiseNone(el);/*debug>*/
+        var node = py.isinstance(el, String) ? document.getElementById(el) : el,
+            size_method;
+        if (py.notNone(method) && py.isinstance(method, String)) {
+            //<debug
+            if (method !== 'inner' && method !== 'outer') {
+                throw new ValueError("Method must be either 'inner' or 'outer'");
+            }
+            //debug>
+            size_method = method;
+        } else if (py.isNone(method)) {
+            size_method = 'outer';
+        } else if (py.isinstance(method, Object) && py.isNone(set_values)) {
+            size_method = 'outer';
+            set_values = method;
+        } /*<debug*/ else if (py.notNone(method)) {
+            throw new TypeError("Wrong type for method");
+        } /*debug>*/
+        size_method = size_method[0].toUpperCase() + size_method.slice(1);
+        //<debug
+        if (py.notNone(set_values) && !py.isinstance(set_values, Object)) {
+            throw new TypeError("When use as a setter, give values as an Object");
+        }
+        if (py.isinstance(el, String) && py.isNone(node)) {
+            throw new ValueError('The ID '+el+' was not found');
+        } else if (!py.isinstance(el, Element, String)) {
+            throw new ValueError('el must be a String or an Element');
+        }
+        //debug>
+        var computed_style = node.getComputedStyle();
+        if (py.isNone(set_values)) {
+            return (py.dom['get' + size_method + 'Layout'](node, computed_style));
+        } else {
+            py.dom['set' + size_method + 'Layout'](node, set_values, computed_style);
+        }
+    },
+
+
+    /**
+     * return real position on the screen
+     * @param {Element} el
+     * @private
+     * @see http://www.quirksmode.org/js/findpos.html
+     * @returns {Int[]} left and top offset
+     */
+    _getOffsets: function _getOffsets(el) {
+        var l = t = 0;
+        if (el.offsetParent) {
+            do {
+                l += el.offsetLeft;
+                t += el.offsetTop;
+            } while (el = el.offsetParent);
+        }
+        return ([l, t]);
+    },
+
+    _getPadding: function _getPadding(el, cs) {
+        cs = py.isNone(cs) ? el.getComputedStyle() : cs;
+        return ({
+            l: cs.paddingLeft ? parseInt(cs.paddingLeft, 10) : 0,
+            r: cs.paddingRight ? parseInt(cs.paddingRight, 10) : 0,
+            t: cs.paddingTop ? parseInt(cs.paddingTop, 10) : 0,
+            b: cs.paddingBottom ? parseInt(cs.paddingBottom, 10) : 0
+        });
+    },
+
+    _getMargin: function _getMargin(el, cs) {
+        cs = py.isNone(cs) ? el.getComputedStyle() : cs;
+        return ({
+            l: cs.marginLeft ? parseInt(cs.marginLeft, 10) : 0,
+            r: cs.marginRight ? parseInt(cs.marginRight, 10) : 0,
+            t: cs.marginTop ? parseInt(cs.marginTop, 10) : 0,
+            b: cs.marginBottom ? parseInt(cs.marginBottom, 10) : 0
+        });
+    },
+
+    _getBorder: function _getBorder(el, cs) {
+        cs = py.isNone(cs) ? el.getComputedStyle() : cs;
+        return ({
+            l: cs.borderLeftWidth ? parseInt(cs.borderLeftWidth, 10) : 0,
+            r: cs.borderRightWidth ? parseInt(cs.borderRightWidth, 10) : 0,
+            t: cs.borderTopWidth ? parseInt(cs.borderTopWidth, 10) : 0,
+            b: cs.borderBottomWidth ? parseInt(cs.borderBottomWidth, 10) : 0
+        });
+    },
+
+    /**
+     * Get box layout including padding, borders, and margins
+     * @param {Element} element
+     * @param {Object} [cs] computed style
+     */
+    getOuterLayout: function getOuterLayout(el, cs) {
+        //<debug
+        if (py.isNone(el) || !py.isinstance(el, Element)) {
+            throw TypeError("el must be an Element");
+        }
+        //debug>
+        if (py.isNone(cs)) {
+            cs = el.getComputedStyle();
+        }
+        var w = el.offsetWidth,
+            h = el.offsetHeight,
+            offsets = py.dom._getOffsets(el),
+            l = offsets[0],
+            t = offsets[1],
+            margin = this._getMargin(el, cs);
+
+        return ({
+            w: w + margin.l + margin.r,
+            h: h + margin.t + margin.b,
+            l: l,
+            t: t
+        });
+    },
+
+    /**
+     * Get box layout (inner size without padding and borders)
+     * @param {Element} element
+     * @param {Object} [cs] computed style
+     */
+    getInnerLayout: function getInnerLayout(el, cs) {
+        //<debug
+        if (py.isNone(el) || !py.isinstance(el, Element)) {
+            throw TypeError("el must be an Element");
+        }
+        //debug>
+        if (py.isNone(cs)) {
+            cs = el.getComputedStyle();
+        }
+        var w = el.clientWidth,
+            h = el.clientHeight,
+            offsets = py.dom._getOffsets(el),
+            l = offsets[0],
+            t = offsets[1],
+            padding = this._getPadding(el, cs),
+            margin = this._getMargin(el, cs),
+            border = this._getBorder(el, cs);
+
+        return ({
+            w: w - padding.l - padding.r,
+            h: h - padding.t - padding.b,
+            l: l + padding.l + margin.l + border.l,
+            t: t + padding.t + margin.t + border.t
+        });
+    },
+
+
+    /**
+     * Set box layout including padding, borders and margin
+     * @param {Element} element
+     * @param {Object} values
+     * @param {Integer} [values.w] width
+     * @param {Integer} [values.h] height
+     * @param {Integer} [values.l] left position relative to screen
+     * @param {Integer} [values.t] top position relative to screen
+     * @param {Object} [cs] Computed styles
+     */
+    setOuterLayout: function setOuterLayout(el, values, cs) {
+        //<debug
+        if (py.isNone(el) || !py.isinstance(el, Element)) {
+            throw TypeError("el must be an Element");
+        }
+        if (py.isNone(values) || !py.isinstance(values, Object)) {
+            throw TypeError("values must be an Object");
+        }
+        //debug>
+        var margin = this._getMargin(el, cs),
+            border = this._getBorder(el, cs),
+            padding = this._getPadding(el, cs);
+        if (py.notNone(values.w)) {
+            var w = values.w - margin.l - margin.r - padding.l - padding.r - border.l - border.r; //TODO IE box model ?
+            el.style.width = (w > 0 ? w : 0) + 'px';
+        }
+        if (py.notNone(values.h)) {
+            var h = values.h - margin.t - margin.b - padding.t - padding.b - border.t - border.b; //TODO IE box model ?
+            el.style.height = (h > 0 ? h : 0) + 'px';
+        }
+        if (py.notNone(values.t) || py.notNone(values.l)) {
+            var offsets = this._getOffsets(el);
+            el.style.position = 'absolute'; // really ?
+            el.style['left'] = (py.notNone(values.l) ? values.l: offsets[0]) + 'px';
+            el.style['top'] = (py.notNone(values.t) ? values.t: offsets[1]) + 'px';
+        }
+    },
+
+    /**
+     * Set box layout excluding padding, borders and margin
+     * @param {Element} element
+     * @param {Object} values
+     * @param {Integer} [values.w] width
+     * @param {Integer} [values.h] height
+     * @param {Integer} [values.l] left position relative to screen
+     * @param {Integer} [values.t] top position relative to screen
+     * @param {Object} [cs] Computed styles
+     */
+    setInnerLayout: function setOuterLayout(el, values, cs) {
+        //<debug
+        if (py.isNone(el) || !py.isinstance(el, Element)) {
+            throw TypeError("el must be an Element");
+        }
+        if (py.isNone(values) || !py.isinstance(values, Object)) {
+            throw TypeError("values must be an Object");
+        }
+        //debug>
+        var margin = this._getMargin(el, cs),
+            border = this._getBorder(el, cs),
+            padding = this._getPadding(el, cs);
+        if (py.notNone(values.w)) {
+            //TODO IE box model ?
+            el.style.width = (values.w > 0 ? values.w : 0) + 'px';
+        }
+        if (py.notNone(values.h)) {
+            //TODO IE box model ?
+            el.style.height = (values.h > 0 ? values.h : 0) + 'px';
+        }
+        if (py.notNone(values.t) || py.notNone(values.l)) {
+            var offsets = this._getOffsets(el);
+            el.style.position = 'absolute'; // really ?
+            var l, t;
+            if (py.notNone(values.l)) {
+                l = values.l - margin.l - border.l - padding.l;
+            } else {
+                l = offsets[0];
+            }
+            if (py.notNone(values.t)) {
+                t = values.t - margin.t - border.t - padding.t;
+            } else {
+                t = offsets[1];
+            }
+            el.style['left'] = l + 'px';
+            el.style['top'] = t + 'px';
         }
     }
+
+
+
 });
-py.importModule('py.core.dom-query');
-py.importModule('py.core.document');
+
+py._importModule('py.core.dom-query');
+py._importModule('py.core.document');

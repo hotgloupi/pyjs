@@ -25,16 +25,19 @@ if (typeof console != "undefined") {
 }
 
 (function(){
-    var early_loading = false;
+    var dom_loaded = false;
     // http://www.kryogenix.org/days/2007/09/26/shortloaded
     (function(i) {var u =navigator.userAgent;var e=/*@cc_on!@*/false; var st =
     setTimeout;if(/webkit/i.test(u)){st(function(){var dr=document.readyState;
-    if(dr=="loaded"||dr=="complete"){i()}else{st(arguments.callee,10);}},10);}
+    if(dr=="loaded"||dr=="complete"){i();}else{st(arguments.callee,10);}},10);}
     else if((/mozilla/i.test(u)&&!/(compati)/.test(u)) || (/opera/i.test(u))){
     document.addEventListener("DOMContentLoaded",i,false); } else if(e){     (
     function(){var t=document.createElement('doc:rdy');try{t.doScroll('left');
     i();t=null;}catch(e){st(arguments.callee,0);}})();}else{window.onload=i;}})(function() {
-        early_loading = true;
+        dom_loaded = true;
+        if (typeof(py) !== "undefined" && py._onLoad) {
+            py._onLoad();
+        }
     });
 
     /**
@@ -66,8 +69,6 @@ if (typeof console != "undefined") {
         /** alias of body */
         body: null,
 
-        _init_fired: false,
-
         __init__: function() {
             log("Loading PyJS");
             this._findGlobals();
@@ -79,6 +80,11 @@ if (typeof console != "undefined") {
             //TODO complete for browser compatibility
             py.doc = window.document;
             py.body = py.doc.body;
+            if (!py.body) {
+                py.addOnLoad(function() {
+                    py.body = py.doc.body;
+                });
+            }
             if (typeof pyConfig !== "undefined") { // config from user
                 for (var c in pyConfig) {
                     if (pyConfig.hasOwnProperty(c)) {
@@ -90,20 +96,23 @@ if (typeof console != "undefined") {
 
         getHeader: function() {
             var h = document.getElementsByTagName('head')[0];
-            if (!h)
-            h = document.documentElement.firstChild;
+            if (!h) {
+               h = document.documentElement.firstChild;
+            }
             return (h);
         },
 
         _initPyModulesPath: function() {
             var header = this.getHeader(),
-            scripts = [],
-            py_src = null,
-            src,
-            i;
+                scripts = [],
+                py_src = null,
+                src,
+                i;
             for (i = 0; i < header.childNodes.length; i++) {
-                    if (header.childNodes[i].tagName && header.childNodes[i].tagName.toLowerCase() == 'script')
-                scripts.push(header.childNodes[i]);
+                if (header.childNodes[i].tagName &&
+                    header.childNodes[i].tagName.toLowerCase() == 'script') {
+                    scripts.push(header.childNodes[i]);
+                }
             }
             for (i=scripts.length-1; i>-1; i--) {
                 src = scripts[i].getAttribute('src');
@@ -113,7 +122,7 @@ if (typeof console != "undefined") {
                 }
             }
             if (!py_src) {
-                throw new Error("PyJS module URL not found !");
+                warn("PyJS module URL not found !");
             } else {
                 py._modules_path.py = py_src.replace('core/core.js', '');
             }
@@ -200,11 +209,10 @@ if (typeof console != "undefined") {
         /**
          * Import module from dotted name
          * @param {String} name the module name
+         * @private
          */
-        importModule: function(/*String*/ name) {
-            if (this._loaded_modules[name]) {return;}
-            if (this._init_fired === false) {
-                this._pending_modules.push(name); // append not necessarily available
+        _importModule: function(/*String*/ name) {
+            if (this._loaded_modules[name]) {
                 return ;
             }
             log('import module: ',name);
@@ -212,12 +220,36 @@ if (typeof console != "undefined") {
             try {
                 this.globalEval(src);
             } catch (err) {
-                // TODO better error report
-                this._pending_modules.push(name);
                 throw "Error while loading module " + name + ' : ' + err;
                 return ;
             }
             this._loaded_modules[name] = true;
+        },
+
+        /**
+         * Import module from a dotted name
+         * @param {String} the module name
+         */
+        importModule: function(name) {
+            if (this._can_import_modules) {
+                this._importModule(name);
+            } else {
+                log('Add', name, 'to queue');
+                this._pending_modules.push(name);
+            }
+        },
+
+
+        _importPendingModules: function _importPendingModules() {
+            var m;
+            this._can_import_modules = true;
+            while (m = py._pending_modules.shift()) {
+                py._importModule(m);
+            }
+            // Just in case...
+            if (this._pending_modules.length > 0) {
+                this._importPendingModules();
+            }
         },
 
         /**
@@ -290,9 +322,25 @@ if (typeof console != "undefined") {
             }
         },
 
+        // true when all base modules and pending modules are loaded
+        _can_fire_onload: false,
 
         _onload_fired: false,
         _onload_callbacks: [],
+
+        _onLoad: function _onLoad() {
+            if (this._can_fire_onload && dom_loaded) {
+                var f;
+                while (f = py._onload_callbacks.shift()) {
+                    try {
+                        f();
+                    } catch (err) {
+                        warn('Error with callback ' + f.toString() + ' : ', err);
+                    }
+                }
+                this._onload_fired = true;
+            }
+        },
 
         /**
          * Add a function to be fired when dom is ready
@@ -316,29 +364,35 @@ if (typeof console != "undefined") {
     };
 
     py.global = this;
-    var __init_pyjs_interval__ = setInterval(function() {
+    var __init_pyjs_interval__ = null,
+        __init_pyjs__ = function() {
         if (!py.getHeader()) {
-            return;
+            return (false);
         }
-        clearInterval(__init_pyjs_interval__);
+        if (__init_pyjs_interval__) {
+            clearInterval(__init_pyjs_interval__);
+            __init_pyjs_interval__ = null;
+        }
         py.__init__();
-        py.importModule('py.prototype.__init__');
-        py.importModule('py.core.class');
-        py.importModule('py.core.error');
-        py.importModule('py.core.utils');
-        py.importModule('py.core.browser');
-        py.importModule('py.core.dom');
-        if (py.config.withGlobals === true) {
-            py.importModule('py.core.globals');
-        }
-        py.importModule('py.core.event');
-        py.importModule('py.core.browser_event');
-        py._pending_modules.iter(py.importModule.bind(py));
-        if (early_loading) {
-            warn("Early loading, manual _onLoad");
-            py.browser._onLoad();
-        }
-
-    }, 20);
-
+        py._importPendingModules();
+        py._can_fire_onload = true;
+        py._onLoad();
+        return (true);
+    };
+    if (!__init_pyjs__()) {
+        __init_pyjs_interval__ = setInterval(__init_pyjs__, 10);
+    }
 })();
+
+py.importModule('py.prototype.__init__');
+py.importModule('py.core.class');
+py.importModule('py.core.error');
+py.importModule('py.core.utils');
+py.importModule('py.core.browser');
+py.importModule('py.core.dom');
+if (py.config.withGlobals === true) {
+    py.importModule('py.core.globals');
+}
+py.importModule('py.core.event');
+py.importModule('py.core.browser_event');
+

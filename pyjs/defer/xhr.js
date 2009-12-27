@@ -70,16 +70,14 @@ py.declare('py.defer.XmlHttpRequest', null, {
 
     _fire: function () {
         var o = this.options;
-        var url = py.buildUrl(o.url, o.query);
         if (o.prevent_cache) {
-          var d = new Date();
-          if (!o.url.contains('?')) {
-            o.url += '?';
-          } else {
-            o.url += '&';
-          }
-          o.url += 'prevent_cache='+d.getTime()+'.'+d.getMilliseconds();
+            var d = new Date();
+            if (py.isNone(o.query)) {
+                o.query = {};
+            }
+            o.query.prevent_cache = d.getTime()+'.'+d.getMilliseconds();
         }
+        var url = py.buildUrl(o.url, o.query);
         if (py.notNone(o.username)) {
             this.xhr.open(o.method, url, true, o.username, o.password);
         } else {
