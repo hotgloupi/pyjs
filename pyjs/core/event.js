@@ -32,12 +32,41 @@
         _func: null,
 
         /**
+         * Generic handler
+         * @param {String} evt_name the name of event
+         * @param {Object} The scope for the callback
+         * @param {Function} func callback
+         * @param {Function} [disconnect] Specify a disconnector function if obj
+         *                                have not any 'disconnect' method
          * @constructs
          */
-        __init__: function __init__(evt_name, obj, func) {
+        __init__: function __init__(evt_name, obj, func, _disconnect) {
             this._id = getHandlerId();
             this._event_name = evt_name;
             this._func = func.bind(obj);
+            this._obj = obj;
+            if (py.notNone(_disconnect)) {
+                this.disconnect = _disconnect;
+            }
+        },
+
+        disconnect: function() {
+            //<debug
+            if (
+                    py.isNone(this._obj) ||
+                    py.isNone(this._obj.disconnect) ||
+                    !py.isinstance(this._obj.disconnect, Function)
+                ) {
+                throw new TypeError("Cannot find any disconnect function for "+this._event_name);
+            }
+            try {
+                //debug>
+                this._obj.disconnect(this);
+                //<debug
+            } catch (err) {
+                warn("Error while disconnect", this, "from", this._obj);
+            }
+            //debug>
         },
 
         /**
@@ -84,7 +113,10 @@
             } else {
                 obj = obj_or_func;
             }
-            var hdlr = new py.event.Handler(evt_name, obj, func)
+            var hdlr = new py.event.Handler(evt_name, obj, func);
+            hdlr.disconnect = function disconnect() {
+                setTimeout(function(){py.unsubscribe(hdlr);}, 0);
+            };
             hdlrs[evt_name].append(hdlr);
             return (hdlr);
         },

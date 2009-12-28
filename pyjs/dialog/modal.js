@@ -59,25 +59,37 @@ py.declare('py.dialog.Modal', [py.dialog.Dialog, py.dialog.FormMixin], {
         //<debug
         py.raiseNone(args);
         if (py.isNone(args.onValidate) || !py.isinstance(args.onValidate, Function)) {
-            throw TypeError("you must give a function onValidate");
+            throw new TypeError("you must give a function onValidate");
         }
         //debug>
+        var i=0;
+        log('i=', i++);
         this.onValidate = args.onValidate;
+        log('i=', i++);
         this.$super(arguments);
+        log('i=', i++);
         this._toolbar_node = $c('div', {"class": "pyDialogToolbar"});
+        log('i=', i++);
         this._cancel_button = $c('button', {
             'class': 'pyDialogButton pyDialogCancelButton',
             'content': this._cancel_str
         });
+        log('i=', i++);
         this._validate_button = $c('button', {
             'class': 'pyDialogButton pyDialogValidateButton',
             'content': this._validate_str
         });
+        log('i=', i++);
         this._toolbar_node.appendChild(this._cancel_button);
+        log('i=', i++);
         this._toolbar_node.appendChild(this._validate_button);
+        log('i=', i++);
         this._node.appendChild(this._toolbar_node);
+        log('i=', i++);
         this._cancel_hdlr = this._cancel_button.connect('click', this._onCancel.bind(this));
+        log('i=', i++);
         this._validate_hdlr = this._validate_button.connect('click', this._onValidate.bind(this));
+        log('i=', i++);
     },
 
     _onValidate: function() {

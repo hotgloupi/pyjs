@@ -161,7 +161,7 @@ Element.prototype.query = function query(selectors) {
 /**
  * connect a function to an element's event
  * @param {String} event_name The event name, starting with 'on'
- * @param {Object|Function} Scope object or function to execute
+ * @param {Object|Function} scope Scope object or function to execute
  * @param {Function|String} [func] the function to execute
  * @returns {py.event.Handler} Handler, needed to disconnect
  */
@@ -178,7 +178,7 @@ Element.prototype.connect = function connect(str, scope, func) {
     if (py.notNone(func)) {
         if (py.isinstance(func, String)) {
             //<debug
-            if (py.isNone(obj)) {
+            if (py.isNone(scope)) {
                 throw new ValueError("scope cannot be None when function is a String");
             }
             //debug>
@@ -198,6 +198,15 @@ Element.prototype.connect = function connect(str, scope, func) {
     function buildFirerer(str, hdlrs) {
         return (function (e) {
             var evt = e || window.event;
+            var ret_val = true;
+            evt.cancel = function() {
+                evt.returnValue = false;
+                if (evt.preventDefault) {
+                    evt.preventDefault();
+                }
+                ret_val = false;
+                setTimeout(function() {evt.cancel = py.nothing;}, 0);
+            };
             hdlrs.iter(function (hdlr) {
                 /*<debug*/try {/*debug>*/
                     hdlr.fire([evt]);
@@ -207,6 +216,7 @@ Element.prototype.connect = function connect(str, scope, func) {
                 }
                 //debug>
             });
+            return (ret_val);
         });
     }
 
@@ -220,7 +230,7 @@ Element.prototype.connect = function connect(str, scope, func) {
         if (this.addEventListener) {
             this.addEventListener(str, this._fire_hdlrs[str], false);
         } else if (this.attachEvent) {
-            obj.attachEvent('on' + str, this._fire_hdlrs[str]);
+            this.attachEvent('on' + str, this._fire_hdlrs[str]);
         }/*<debug*/ else {
             throw "Cannot attach event !";
         }

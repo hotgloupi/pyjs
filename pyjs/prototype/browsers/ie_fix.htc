@@ -6,6 +6,9 @@
     <PUBLIC:METHOD NAME="contains" INTERNALNAME="_contains" />
     <PUBLIC:METHOD NAME="attr" INTERNALNAME="_attr" />
     <PUBLIC:METHOD NAME="query" INTERNALNAME="_query" />
+    <PUBLIC:METHOD NAME="connect" INTERNALNAME="_connect" />
+    <PUBLIC:METHOD NAME="disconnect" INTERNALNAME="_disconnect" />
+
     <PUBLIC:METHOD NAME="__setitem__" INTERNALNAME="___setitem__" />
     <PUBLIC:METHOD NAME="__getitem__" INTERNALNAME="___getitem__" />
     <PUBLIC:METHOD NAME="setStyle" INTERNALNAME="_setStyle" />
@@ -21,6 +24,8 @@
         ___setitem__ = el.__setitem__;
         ___getitem__ = el.__getitem__;
         _attr = el.attr;
+        _connect = el.connect;
+        _disconnect = el.disconnect;
         _query = el.query;
         _setStyle = el.setStyle;
         _setStyles = el.setStyles;
