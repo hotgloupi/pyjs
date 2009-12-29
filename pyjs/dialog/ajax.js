@@ -8,12 +8,25 @@ py.importModule('py.dialog.dialog');
 py.importModule('py.dialog.modal');
 py.importModule('py.defer.xhr');
 
-py.declare('py.dialog.AjaxMixin', null, {
 
+/**
+ * Mixin for ajax dialog
+ * @name py.dialog.AjaxMixin
+ * @class
+ */
+py.declare('py.dialog.AjaxMixin', null, {
+    /** @lends py.dialog.AjaxMixin.prototype */
+
+    /** Loading message */
     _loading_str: "Loading...",
+
+    /** Error message */
     _error_str: "Loading error",
+
+    /** Current deferred */
     _defer: null,
 
+    /** fetch data from given url */
     _fetchData: function () {
         if (py.notNone(this._defer)) {
             return ;
@@ -37,12 +50,14 @@ py.declare('py.dialog.AjaxMixin', null, {
         });
     },
 
+    /** callback when data is available */
     _onLoad: function _onLoad(res) {
         this._args.content = res;
         this._setContent();
         this._defer = null;
     },
 
+    /** error callback */
     _onError: function _onError() {
         this._args.content = this._error_str;
         this._setContent();
@@ -57,8 +72,9 @@ py.declare('py.dialog.AjaxDialog', [py.dialog.Dialog, py.dialog.AjaxMixin], {
 
     /**
      * Dialog that fetch content from an url
-     * @construct
+     * @constructs
      * @augments py.dialog.Dialog
+     * @augments py.dialog.AjaxMixin
      * @param {Object} args arguments for the dialog
      * @param {String} args.url Url to use
      * @param {Boolean} [args.refresh_on_show] refresh every time show() is called
@@ -84,7 +100,7 @@ py.declare('py.dialog.AjaxModal', [py.dialog.Modal, py.dialog.AjaxMixin], {
 
     /**
      * Dialog that fetch content from an url
-     * @construct
+     * @constructs
      * @augments py.dialog.Dialog
      * @param {Object} args arguments for the dialog
      * @param {String} args.url Url to use

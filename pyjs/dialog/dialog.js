@@ -14,41 +14,48 @@
 py.declare('py.dialog.Dialog', null, {
     /** @lends py.dialog.Dialog.prototype */
 
-    // container node
+    /** main container node */
     _node: null,
 
-    // inside node
+    /** content node */
     _content_node: null,
 
+    /** Title bar node, contains _title_node and _close_button */
     _titlebar_node: null,
+
+    /** title  node */
     _title_node: null,
+
+    /** close button node */
     _close_button: null,
 
-    //iframe bg
+    /** the background node (an iframe) */
     _background_node: null,
 
+    /** usefull boolean !*/
     _content_loaded: false,
 
-    /**
-     * max width ratio
-     * @private
-     */
+    /** max width ratio */
     _max_width: 0.95,
 
-    /**
-     * max height ratio
-     * @private
-     */
+    /** max height ratio */
     _max_height: 0.85,
 
+    /** another usefull boolean ! */
     _is_shown: false,
 
+    /** store __init__ argument */
     _args: null,
 
-    // handlers
+    /** resize handler */
     _resize_hdlr: null,
+
+    /** scroll handler */
     _scroll_hdlr: null,
 
+    /**
+     * Template string to be placed in _node
+     */
     template: '<div class="pyDialogTitleBar">'+
                 '<span class="pyDialogTitle"></span>'+
                 '<span class="pyDialogCloseButton">X</span>'+
@@ -83,6 +90,7 @@ py.declare('py.dialog.Dialog', null, {
         }
     },
 
+    /** put the content in _content_node */
     _setContent: function _setContent() {
         if (py.notNone(this._args.content)) {
             this._content_node.attr('content', this._args.content);
@@ -91,6 +99,7 @@ py.declare('py.dialog.Dialog', null, {
         this._refresh();
     },
 
+    /** prepare _node styles */
     _initNode: function _initNode() {
         this._node.setStyles({
             'z-index': '100',
@@ -108,6 +117,7 @@ py.declare('py.dialog.Dialog', null, {
             this._title_node.attr('content', this._args.title);
         }
     },
+
 
     _start_dnd_hdlr: null,
     _dnd_move_hdlr: null,
