@@ -56,7 +56,7 @@ py.declare('py.dialog.Dialog', null, {
     /**
      * Template string to be placed in _node
      */
-    template: '<div class="pyDialogTitleBar">'+
+    template: '<div class="pyDialogTitlebar">'+
                 '<span class="pyDialogTitle"></span>'+
                 '<span class="pyDialogCloseButton">X</span>'+
               '</div>'+
@@ -76,7 +76,7 @@ py.declare('py.dialog.Dialog', null, {
         py.body.appendChild(this._node);
         this._node.innerHTML = this.template;
         this._content_node = this._node.query('div.pyDialogContent')[0];
-        this._titlebar_node = this._node.query('div.pyDialogTitleBar')[0];
+        this._titlebar_node = this._node.query('div.pyDialogTitlebar')[0];
         this._title_node = this._node.query('span.pyDialogTitle')[0];
         this._close_button = this._node.query('span.pyDialogCloseButton')[0];
         this._args = args || {};

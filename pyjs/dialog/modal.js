@@ -6,7 +6,7 @@
 
 
 py.importModule('py.dialog.dialog');
-
+py.importModule('py.defer.xhr');
 
 py.declare('py.dialog.FormMixin', null, {
     _getFormValues: function _getFormValues() {
@@ -37,9 +37,36 @@ py.declare('py.dialog.FormMixin', null, {
                 }
             });
         });
+        if (this._args.send_forms === true) {
+            return (this._sendForms(forms, res));
+        } else {
+            return (res);
+        }
+    },
+
+    _sendForms: function(forms, values) {
+        var res = null;
+        forms.iter(function (form) {
+            var form_name = form.attr('name') || '';
+            var form_href = form.attr('action') || '';
+            if ((py.len(form_href) === 0) || (py.len(form_name) === 0)) {
+                return ;
+            }
+            if (py.isNone(values[form_name])) {
+                return ;
+            }
+            var d = py.defer.xhrPost({
+                query: values[form_name],
+                url: form_href
+            });
+            if (py.notNone(res)) {
+                res.chainDeferred(d);
+            } else {
+                res = d;
+            }
+        });
         return (res);
     }
-
 });
 
 /** @class */
@@ -63,33 +90,22 @@ py.declare('py.dialog.Modal', [py.dialog.Dialog, py.dialog.FormMixin], {
         }
         //debug>
         var i=0;
-        log('i=', i++);
         this.onValidate = args.onValidate;
-        log('i=', i++);
         this.$super(arguments);
-        log('i=', i++);
         this._toolbar_node = $c('div', {"class": "pyDialogToolbar"});
-        log('i=', i++);
         this._cancel_button = $c('button', {
             'class': 'pyDialogButton pyDialogCancelButton',
             'content': this._cancel_str
         });
-        log('i=', i++);
         this._validate_button = $c('button', {
             'class': 'pyDialogButton pyDialogValidateButton',
             'content': this._validate_str
         });
-        log('i=', i++);
         this._toolbar_node.appendChild(this._cancel_button);
-        log('i=', i++);
         this._toolbar_node.appendChild(this._validate_button);
-        log('i=', i++);
         this._node.appendChild(this._toolbar_node);
-        log('i=', i++);
         this._cancel_hdlr = this._cancel_button.connect('click', this._onCancel.bind(this));
-        log('i=', i++);
         this._validate_hdlr = this._validate_button.connect('click', this._onValidate.bind(this));
-        log('i=', i++);
     },
 
     _onValidate: function() {

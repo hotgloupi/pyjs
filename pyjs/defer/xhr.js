@@ -164,8 +164,9 @@ py.extendNamespace('py.defer', {
             );
         });
         params.content = '&'.join(parts);
-        if (py.isNone(params.headers))
+        if (py.isNone(params.headers)) {
             params.headers = [];
+        }
         params.headers.append(["Content-Type", "application/x-www-form-urlencoded"]);
         params.headers.append(["Content-Length", py.len(params.content)]);
         delete params["query"];
