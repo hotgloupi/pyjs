@@ -121,11 +121,11 @@ if (typeof console != "undefined") {
                     break;
                 }
             }
-            if (!py_src) {
-                warn("PyJS module URL not found !");
-            } else {
+            if (py_src) {
                 py._modules_path.py = py_src.replace('core/core.js', '');
-            }
+            } /*<debug*/ else {
+                warn("PyJS module URL not found !");
+            } /*debug>*/
         },
 
         registerModulePath: function(prefix, path) {
@@ -221,7 +221,6 @@ if (typeof console != "undefined") {
                 this.globalEval(src);
             } catch (err) {
                 throw "Error while loading module " + name + ' : ' + err;
-                return ;
             }
             this._loaded_modules[name] = true;
         },

@@ -109,8 +109,11 @@ py.declare('py.dialog.Modal', [py.dialog.Dialog, py.dialog.FormMixin], {
     },
 
     _onValidate: function() {
+        var res = this.onValidate(this._getFormValues());
+        if (py.notNone(res) && (res === false)) {
+            return ;
+        }
         this.hide();
-        this.onValidate(this._getFormValues());
     },
 
     onValidate: function () {

@@ -233,7 +233,7 @@ Element.prototype.connect = function connect(str, scope, func) {
             this.attachEvent('on' + str, this._fire_hdlrs[str]);
         }/*<debug*/ else {
             throw "Cannot attach event !";
-        }
+        }/*debug>*/
     }
     var hdlr = new py.event.Handler(str, self, func)
     this._hdlrs[str].append(hdlr);
@@ -408,7 +408,7 @@ Element.prototype.getStyles = function getStyles(styles) {
                 } else {
                     return this.currentStyle[mapping];
                 }
-            }
+            };
         } else {
             var gs = py.doc.defaultView.getComputedStyle;
             getter = function (k) { // others use document.defaultView.getComputedStyle
