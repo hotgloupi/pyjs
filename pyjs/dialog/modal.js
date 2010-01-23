@@ -13,7 +13,9 @@ py.declare('py.dialog.FormMixin', null, {
         var forms = this._node.query('form'),
             res = {},
             pos;
-        forms.append(this._content_node ? this._content_node : this._node);
+        if (py.len(forms) === 0) {
+          forms.append(this._content_node ? this._content_node : this._node);
+        }
         forms.iter(function (form) {
             var form_name = form.attr('name');
             if (py.isNone(form_name) || py.len(form_name) === 0) {
@@ -38,7 +40,9 @@ py.declare('py.dialog.FormMixin', null, {
             });
         });
         if (this._args.send_forms === true) {
-            return (this._sendForms(forms, res));
+            if (this.isValid(res)) {
+                return (this._sendForms(forms, res));
+            }
         } else {
             return (res);
         }
@@ -50,9 +54,15 @@ py.declare('py.dialog.FormMixin', null, {
             var form_name = form.attr('name') || '';
             var form_href = form.attr('action') || '';
             if ((py.len(form_href) === 0) || (py.len(form_name) === 0)) {
+                //<debug
+                warn('Form in a dialog need both "action" and "name" attributes to be sent', form);
+                //debug>
                 return ;
             }
             if (py.isNone(values[form_name])) {
+                //<debug
+                warn('No values in the form', form);
+                //debug>
                 return ;
             }
             var d = py.defer.xhrPost({
@@ -66,6 +76,10 @@ py.declare('py.dialog.FormMixin', null, {
             }
         });
         return (res);
+    },
+
+    isValid: function(res) {
+        return (true);
     }
 });
 
@@ -91,6 +105,9 @@ py.declare('py.dialog.Modal', [py.dialog.Dialog, py.dialog.FormMixin], {
         //debug>
         var i=0;
         this.onValidate = args.onValidate;
+        if (py.notNone(args.isValid)) {
+            this.isValid = args.isValid;
+        }
         this.$super(arguments);
         this._toolbar_node = $c('div', {"class": "pyDialogToolbar"});
         this._cancel_button = $c('button', {
