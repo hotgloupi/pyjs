@@ -115,7 +115,7 @@ Element.prototype.__setitem__ = function(k, v) {
  * @returns attribute value or undefined
  */
 Element.prototype.attr = function(/*String*/ attribute, /*String?*/ value) {
-    if (!value) {return this.__getitem__(attribute);}
+    if (py.isNone(value)) {return this.__getitem__(attribute);}
     else {this.__setitem__(attribute, value);}
 };
 
@@ -166,6 +166,7 @@ Element.prototype.query = function query(selectors) {
  * @returns {py.event.Handler} Handler, needed to disconnect
  */
 Element.prototype.connect = function connect(str, scope, func) {
+    log('connect', arguments);
     //<debug
     py.raiseNone(str);
     if (!py.isinstance(str, String)) {

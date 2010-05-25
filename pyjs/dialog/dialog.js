@@ -94,8 +94,8 @@ py.declare('py.dialog.Dialog', null, {
     _setContent: function _setContent() {
         if (py.notNone(this._args.content)) {
             this._content_node.attr('content', this._args.content);
+            this._content_loaded = true;
         }
-        this._content_loaded = true;
         this._refresh();
     },
 
@@ -114,7 +114,7 @@ py.declare('py.dialog.Dialog', null, {
         });
         this._setContent();
         if (py.notNone(this._args.title)) {
-            this._title_node.attr('content', this._args.title);
+          this._title_node.attr('content', this._args.title);
         }
     },
 

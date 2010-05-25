@@ -11,6 +11,8 @@
 py.importModule('py.dialog.ajax');
 dialog = null;
 py.addOnLoad(function() {
+  log('pif');
+  setTimeout(function(){
   $('show_docs').connect('click', function() {
     log('pif');
     if (py.notNone(dialog)) {
@@ -29,6 +31,7 @@ py.addOnLoad(function() {
     log('pouf');
     dialog.show();
   });
+},1000);
 });
 </script>
 

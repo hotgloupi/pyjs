@@ -29,8 +29,9 @@ py.addOnLoad(function() {
         return;
     }
 
-    // We finally have our style sheet !
     var path = py._modules_path.py + 'prototype/browsers/ie_fix.htc';
+
+    // We finally have our style sheet !
     style_sheet.addRule('*', '{ behavior: url('+path+')}');
 
     document.nativeCreateElement = document.createElement;

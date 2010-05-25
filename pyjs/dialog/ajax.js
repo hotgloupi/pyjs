@@ -82,11 +82,10 @@ py.declare('py.dialog.AjaxDialog', [py.dialog.Dialog, py.dialog.AjaxMixin], {
      */
     __init__: function __init__(args) {
         this.$super(arguments);
-        this._fetchData();
     },
 
     show: function() {
-        if (this._args.refresh_on_show === true) {
+        if (this._content_loaded === false || this._args.refresh_on_show === true) {
             this._fetchData();
         }
         this.$super(arguments);
@@ -108,11 +107,11 @@ py.declare('py.dialog.AjaxModal', [py.dialog.Modal, py.dialog.AjaxMixin], {
      */
     __init__: function __init__(args) {
         this.$super(arguments);
-        this._fetchData();
     },
 
     show: function() {
-        if (this._args.refresh_on_show === true) {
+        log('content loaded =',this._content_loaded);
+        if (this._content_loaded === false || this._args.refresh_on_show === true) {
             this._fetchData();
         }
         this.$super(arguments);

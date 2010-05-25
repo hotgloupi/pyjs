@@ -156,8 +156,11 @@ py.browser = {
 BrowserDetect = null;
 function useSetGetAttribute(attr) {
     return function(v) {
-        if (py.notNone(v)) {this.setAttribute(attr, v);}
+      if (py.notNone(v)) {
+        this.setAttribute(attr, v);
+      } else {
         return this.getAttribute(attr);
+      }
     };
 }
 
@@ -172,7 +175,7 @@ function setGetValue(set_val) {
             var index = -1;
             // This is not a real tab ...
             Array.prototype.slice.call(this.options, null).iter(function (op, idx) {
-                if (op.value == set_val) {
+                if (op.value === set_val) {
                     index = idx;
                     throw new StopIteration();
                 }
@@ -184,8 +187,7 @@ function setGetValue(set_val) {
             //debug>
             this.selectedIndex = index;
         }
-    }
-    if (tag == 'input' && type == 'checkbox') {
+    } else if (tag == 'input' && type == 'checkbox') {
         if (py.isNone(set_val)) {
             return (this.checked);
         } else {
@@ -196,8 +198,13 @@ function setGetValue(set_val) {
             //debug>
             this.checked = set_val;
         }
+    } else {
+      if (py.isNone(set_val)) {
+        return (this.value);
+      } else {
+        this.value = set_val;
+      }
     }
-    return (this.value);
 }
 
 // Assume all attr are lower cased
@@ -207,6 +214,7 @@ var attributes_maps = {
         'htmlfor': 'for',
         'class': 'className',
         'style': useSetGetAttribute('style'),
+        'name': useSetGetAttribute('name'),
         'value': setGetValue
     },
 

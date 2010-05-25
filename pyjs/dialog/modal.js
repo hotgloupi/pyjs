@@ -25,6 +25,7 @@ py.declare('py.dialog.FormMixin', null, {
                 pos = res[form_name];
             }
             form.query('input,select').iter(function(input) {
+                log('parse ', input);
                 var name = input.attr('name'),
                     type = input.attr('type'),
                     value = input.attr('value');
@@ -49,6 +50,9 @@ py.declare('py.dialog.FormMixin', null, {
     },
 
     _sendForms: function(forms, values) {
+        //<debug
+        log('trying to send', forms, values);
+        //debug>
         var res = null;
         forms.iter(function (form) {
             var form_name = form.attr('name') || '';
