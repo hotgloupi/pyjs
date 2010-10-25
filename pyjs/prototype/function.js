@@ -25,15 +25,18 @@ Function.prototype.__class__ = Function;
         }
         //debug>
         var method = this;
-        return py.isNone(args) ? function () {
-            return method.apply(scope, arguments);
-        } :
-        function () {
-            return method.apply(
-                scope,
-                args.concat(_slice_args.call(arguments, 0))
-            );
-        };
+        if (py.isNone(args)) {
+            return function() {
+                return method.apply(scope, arguments);
+            };
+        } else {
+            return function() {
+                return method.apply(
+                    scope,
+                    args.concat(_slice_args.call(arguments, 0))
+                );
+            };
+        }
     };
 
 

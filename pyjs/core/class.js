@@ -97,14 +97,20 @@ py.declare = function(name, parents, obj) {
     _class.prototype.__bases__ = _parents;
 
     _parents.iter(function(pclass) {
-        pclass.prototype.iteritems(function(key, val) {
-            if (key.isIn(py._reserved_names)) {return;}
-            _class.prototype[key] = val;
-            if (py.notNone(val) && py.isinstance(val, Function)) {
-                _class.prototype.__inherited_functions__[key] = pclass;
-                _class.prototype[key].__name__ = key;
+        if (pclass && pclass.prototype && pclass.prototype.iteritems) {
+            try {
+                pclass.prototype.iteritems(function(key, val) {
+                    if (key.isIn(py._reserved_names)) {return;}
+                        _class.prototype[key] = val;
+                    if (py.notNone(val) && py.isinstance(val, Function)) {
+                        _class.prototype.__inherited_functions__[key] = pclass;
+                        _class.prototype[key].__name__ = key;
+                    }
+                });
+            } catch (err) {
+                warn(err);
             }
-        });
+        }
     });
 
     obj.iteritems(function(key, val) {
@@ -141,7 +147,7 @@ py.superFunction = function(_class, obj, f) {
         try {
             var p = it.next();
             //<debug
-            log('$super for function "' + f + '" in', p.prototype.__name__, 'for', obj);
+            //log('$super for function "' + f + '" in', p.prototype.__name__, 'for', obj);
             //debug>
             if (p.prototype[f] && py.isinstance(p.prototype[f], Function)) {
                 return function super_func() {

@@ -30,7 +30,6 @@
                     return py.isinstance(item, String) ? document.getElementById(item) : item;
                 });
             }
-            log('search from', $base);
             var $match = [];
             // process comma separated selectors
             var $$selectors = parseSelector($selector).split($COMMA), i;
@@ -70,7 +69,6 @@
             }
             $match = $match.concat($$from);
         }
-        log('found -->', $match);
         return $match;
     } catch ($error) {
         warn('Query error', $error);

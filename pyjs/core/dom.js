@@ -324,6 +324,8 @@ py.extendNamespace('py.dom', {
             throw TypeError("values must be an Object");
         }
         //debug>
+        el.style.position = '';
+        el.style.position = 'absolute'; // really ? (bug with margin calculation on chrome)
         var margin = this._getMargin(el, cs),
             border = this._getBorder(el, cs),
             padding = this._getPadding(el, cs);
@@ -335,11 +337,28 @@ py.extendNamespace('py.dom', {
             var h = values.h - margin.t - margin.b - padding.t - padding.b - border.t - border.b; //TODO IE box model ?
             el.style.height = (h > 0 ? h : 0) + 'px';
         }
-        if (py.notNone(values.t) || py.notNone(values.l)) {
-            var offsets = this._getOffsets(el);
-            el.style.position = 'absolute'; // really ?
-            el.style['left'] = (py.notNone(values.l) ? values.l: offsets[0]) + 'px';
-            el.style['top'] = (py.notNone(values.t) ? values.t: offsets[1]) + 'px';
+
+        var offsets = null;
+        if (py.isNone(values.l)) {
+            offsets = this._getOffsets(el);
+            values.l = offsets[0];
+        }
+        if (py.isNone(values.t)) {
+            if (py.isNone(offsets))
+                offsets = this._getOffsets(el);
+            values.t = offsets[1];
+        }
+        el.style['left'] = values.l + 'px';
+        el.style['top'] = values.t + 'px';
+
+        offsets = this._getOffsets(el);
+        if (values.l - offsets[0] != 0)
+        {
+            el.style['left'] = (values.l - (offsets[0] - values.l)) + 'px';
+        }
+        if (values.t - offsets[1] != 0)
+        {
+            el.style['top'] = (values.t - (offsets[1] - values.t)) + 'px';
         }
     },
 
@@ -353,7 +372,7 @@ py.extendNamespace('py.dom', {
      * @param {Integer} [values.t] top position relative to screen
      * @param {Object} [cs] Computed styles
      */
-    setInnerLayout: function setOuterLayout(el, values, cs) {
+    setInnerLayout: function setInnerLayout(el, values, cs) {
         //<debug
         if (py.isNone(el) || !py.isinstance(el, Element)) {
             throw TypeError("el must be an Element");

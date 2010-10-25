@@ -6,23 +6,31 @@
 
 if (typeof console != "undefined") {
     if (typeof console.log.apply != "undefined") {
-        log = function() {
-            try{
-                console.log.apply(console, arguments);
-            } catch(err) {}
-        };
-        warn = function(){
-            try{
-                console.warn.apply(console, arguments);
-            } catch(err) {}
-        };
+        if (typeof log === "undefined") {
+            log = function() {
+                try{
+                    console.log.apply(console, arguments);
+                } catch(err) {}
+            };
+        }
+        if (typeof warn === "undefined") {
+            warn = function(){
+                try{
+                    console.warn.apply(console, arguments);
+                } catch(err) {}
+            };
+        }
     } else {
-        log = console.log;
-        warn = console.warn;
+        if (typeof log === "undefined")
+            log = console.log;
+        if (typeof warn === "undefined")
+            warn = console.warn;
     }
 } else {
     log = warn = function(){};
 }
+
+var py = null;
 
 (function(){
     var dom_loaded = false;
@@ -56,9 +64,9 @@ if (typeof console != "undefined") {
         _modules_path: {},
 
         // Contains loaded modules
-        _loaded_modules:  {
-            'py.core.core': true // this is the name of this module !
-        },
+        _loaded_modules: [
+            'py.core.core' // this is the name of this module !
+        ],
 
         // modules to be loaded
         _pending_modules: [],
@@ -212,17 +220,19 @@ if (typeof console != "undefined") {
          * @private
          */
         _importModule: function(/*String*/ name) {
-            if (this._loaded_modules[name]) {
-                return ;
+            for (var i = 0, len = this._loaded_modules.length; i < len; ++i)
+            {
+                if (this._loaded_modules[i] == name)
+                    return ;
             }
-            log('import module: ',name);
+            log('import module: ', name);
             var src = this.loadJs(py.getModuleUrl(name));
             try {
                 this.globalEval(src);
             } catch (err) {
                 throw "Error while loading module " + name + ' : ' + err;
             }
-            this._loaded_modules[name] = true;
+            this._loaded_modules.push(name);
         },
 
         /**
@@ -394,4 +404,12 @@ if (py.config.withGlobals === true) {
 }
 py.importModule('py.core.event');
 py.importModule('py.core.browser_event');
-
+//<debug
+py.importModule('py.packer.packer');
+py.packMe = function packMe(args) {
+    var modules = py._loaded_modules.filter(function(mod) {
+        return !mod.startswith("py.packer");
+    });
+    py.packer.pack(modules, args);
+}
+//debug>

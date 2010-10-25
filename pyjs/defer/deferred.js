@@ -9,10 +9,8 @@
  * @namespace
  * @name py.defer
  */
-
-
 py.declare('py.defer.AlreadyCalledError', PyError, {message: 'Deferred already called'});
-py.declare('py.defer.DeferredFailure', PyError, {});
+py.declare('py.defer.DeferredFailure', PyError, {message: 'Last callback failure'});
 
 (function(){
     var current_id = 0;
@@ -159,7 +157,7 @@ py.declare('py.defer.DeferredFailure', PyError, {});
                 while (this.callbacks.length > 0) {
                     var item = this.callbacks.shift(),
                         callback, args, res;
-                    if (!py.isinstance(this.last_result[0], py.defer.DeferredFailure)) {
+                    if (py.isNone(this.last_result[0]) || !py.isinstance(this.last_result[0], py.defer.DeferredFailure)) {
                         callback = item[0][0];
                         args = item[0][1];
                     } else {

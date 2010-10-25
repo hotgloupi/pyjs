@@ -103,8 +103,12 @@ var methods = {
      */
     isinstance: function isinstance(obj, _class) {
         /*<debug*/
-        py.raiseNone(obj);
-        py.raiseNone(_class);
+        if (py.isNone(obj)) {
+            throw new ValueError("instance argument must not be null");
+        }
+        if (py.isNone(_class)) {
+            throw new ValueError("class argument must not be null");
+        }
         /*debug>*/
         var l = arguments.length,
             name = obj.__class__.prototype.__name__;

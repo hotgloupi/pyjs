@@ -267,14 +267,13 @@ py.browser.update({
      */
     getViewportWidth: function() {
         var width = 0;
-        if (window.innerWidth) {
-            width = window.innerWidth - 18;
-        }
-        else if (document.documentElement && document.documentElement.clientWidth) {
+
+        if (document.documentElement && document.documentElement.clientWidth) {
             width = document.documentElement.clientWidth;
-        }
-        else if(document.body && document.body.clientWidth) {
+        } else if(document.body && document.body.clientWidth) {
             width = document.body.clientWidth;
+        } else if (window.innerWidth) {
+            width = window.innerWidth - 18;
         }
         return width;
     },
@@ -284,14 +283,12 @@ py.browser.update({
      */
     getViewportHeight: function() {
         var height = 0;
-        if (window.innerHeight) {
-            height = window.innerHeight - 18;
-        }
-        else if (document.documentElement && document.documentElement.clientHeight) {
-            height = document.documentElement.clientHeight;
-        }
-        else if( document.body && document.body.clientHeight ) {
+        if (document.body && document.body.clientHeight ) {
             height = document.body.clientHeight;
+        } else if (document.documentElement && document.documentElement.clientHeight) {
+            height = document.documentElement.clientHeight;
+        } else if (window.innerHeight) {
+            height = window.innerHeight - 18;
         }
         return height;
     },

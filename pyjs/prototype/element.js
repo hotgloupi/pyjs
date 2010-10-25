@@ -166,7 +166,6 @@ Element.prototype.query = function query(selectors) {
  * @returns {py.event.Handler} Handler, needed to disconnect
  */
 Element.prototype.connect = function connect(str, scope, func) {
-    log('connect', arguments);
     //<debug
     py.raiseNone(str);
     if (!py.isinstance(str, String)) {
@@ -202,8 +201,11 @@ Element.prototype.connect = function connect(str, scope, func) {
             var ret_val = true;
             evt.cancel = function() {
                 evt.returnValue = false;
-                if (evt.preventDefault) {
+                if (py.notNone(evt.preventDefault)) {
                     evt.preventDefault();
+                }
+                if (py.notNone(evt.cancelBubble)) {
+                    evt.cancelBubble = true;
                 }
                 ret_val = false;
                 setTimeout(function() {evt.cancel = py.nothing;}, 0);
