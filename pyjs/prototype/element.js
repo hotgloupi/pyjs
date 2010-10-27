@@ -200,15 +200,20 @@ Element.prototype.connect = function connect(str, scope, func) {
             var evt = e || window.event;
             var ret_val = true;
             evt.cancel = function() {
-                evt.returnValue = false;
-                if (py.notNone(evt.preventDefault)) {
-                    evt.preventDefault();
-                }
-                if (py.notNone(evt.cancelBubble)) {
-                    evt.cancelBubble = true;
-                }
                 ret_val = false;
-                setTimeout(function() {evt.cancel = py.nothing;}, 0);
+                try {
+                    this.returnValue = false;
+                    if (py.notNone(this.preventDefault)) {
+                        this.preventDefault();
+                    }
+                    if (py.notNone(this.cancelBubble)) {
+                        this.cancelBubble = true;
+                    }
+                }catch(e) {
+                    warn('cannot cancel event');
+                }
+                var self = this;
+                setTimeout(function() {self.cancel = py.nothing;}, 0);
             };
             hdlrs.iter(function (hdlr) {
                 /*<debug*/try {/*debug>*/
@@ -349,7 +354,7 @@ Element.prototype.getStyles = function getStyles(styles) {
                 k = camelize(k);
                 mapping = map[k] || k;
                 if (py.notNone(mapping) && py.isinstance(mapping, Function)) {
-                    return mapping.call(this, v);
+                    return mapping.call(this, k, v);
                 }
                 this.style[mapping] = v;
             };

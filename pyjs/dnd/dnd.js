@@ -76,11 +76,14 @@ py.declare('py.dnd.DndNode', null, {
     },
 
     _startDnd: function _startDnd(evt) {
+        var startx = evt.clientX,
+            starty = evt.clientY;
         var startDnd = (function() {
             evt.cancel();
             this._releaseDnd(); // Just in case
-            this.mouse_startx = evt.clientX;
-            this.mouse_starty = evt.clientY;
+
+            this.mouse_startx = startx;
+            this.mouse_starty = starty;
             this.node_startx = this._node.offsetLeft;
             this.node_starty = this._node.offsetTop;
             this.deltax = 0;
