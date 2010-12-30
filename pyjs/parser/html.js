@@ -51,8 +51,11 @@ py.declare('py.parser.HTMLElementHandler', [py.parser.Handler], {
 py.declare('py.parser.HTMLParser', [py.parser.Parser], {
     /** @lends py.parser.HTMLParser */
 
-    __init__: function() {
+    _root: null,
+
+    __init__: function(root) {
         this.$super(arguments);
+        this._root = root || py.body;
     },
 
     getNext: function(element, elements, idx) {
@@ -67,6 +70,8 @@ py.declare('py.parser.HTMLParser', [py.parser.Parser], {
         }
         do {
           element = element.parentNode;
+          if (this._root === element)
+              return (null);
         } while (py.isNone(element.nextSibling) && element.isIn(elements));
         if (element.nextSibling)
           return (element.nextSibling);

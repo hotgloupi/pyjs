@@ -4,6 +4,7 @@
  * @version 0.1
  */
 
+/*global Element */
 
 /**
  * prepare normalized function bound to doc
@@ -45,7 +46,7 @@ py.addOnLoad(function(){
                     '<input type="text" id="test_byname" name="test_byname_foobar" />'+
                     '<div id="test_byname">&nbsp;</div>'+
                     '<p name="test_byname">&nbsp;</p>'+
-                    '<img src="pif.gif" name="test_byname" />';
+                    '<img name="test_byname" />';
 
     py.doc.body.appendChild(div);
     var nodes = py.doc.getElementsByName('test_byname'),

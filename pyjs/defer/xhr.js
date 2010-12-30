@@ -4,6 +4,8 @@
  * @version 0.2
  */
 
+/*global ValueError, setTimeout */
+
 py.importModule('py.defer.deferred');
 
 py.declare('py.defer.XmlHttpRequest', null, {

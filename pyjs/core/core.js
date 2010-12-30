@@ -173,7 +173,7 @@ var py = null;
          * @returns {String} source code
          */
         loadJs: function(/*String*/ url) {
-            if (this.config.preventCache) {
+            if (py.config.preventCache === true) {
                 var d = new Date();
                 if (url.indexOf('?') === -1) {url += '?';}
                 else {url += '&';}

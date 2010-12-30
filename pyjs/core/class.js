@@ -75,6 +75,11 @@ py._getClassSuper = function(_class) {
  * @param {Object} obj The Class methods and members
  */
 py.declare = function(name, parents, obj) {
+    //<debug
+    if (py.isNone(obj)) {
+        throw ValueError("You must supply an object to declare a class (perhaps you just forgot parent argument)");
+    }
+    //debug>
     var _class = function() {
         if (py.notNone(_class.prototype.__init__)) {
             _class.prototype.__init__.apply(this, arguments);
