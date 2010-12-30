@@ -23,23 +23,24 @@ py.declare('py.parser.HTMLElementHandler', [py.parser.Handler], {
      */
     __init__: function(args) {
         this.args = args;
-        if (args.contains('onMatch'))
+        if (args.contains('onMatch')) {
             this.onMatch = args.onMatch;
+        }
     },
 
     match: function(element, elements) {
         if (py.notNone(this.args.tag) && py.notNone(element.tagName) &&
-            (this.args.tag.toUpperCase() != element.tagName.toUpperCase()))
+            (this.args.tag.toUpperCase() != element.tagName.toUpperCase())) {
             return ;
+        }
         if (py.notNone(this.args.classes)) {
-          if (!this.args.classes.all(function(class_name) {
+            var found_cls = this.args.classes.all(function(class_name) {
                 return (py.notNone(element.hasClass) && element.hasClass(class_name));
-              }))
-            return ;
+            });
+            if (!found_cls) { return; }
         }
         this.onMatch(element, elements);
     }
-
 });
 
 
@@ -51,31 +52,19 @@ py.declare('py.parser.HTMLElementHandler', [py.parser.Handler], {
 py.declare('py.parser.HTMLParser', [py.parser.Parser], {
     /** @lends py.parser.HTMLParser */
 
-    _root: null,
-
-    __init__: function(root) {
-        this.$super(arguments);
-        this._root = root || py.body;
-    },
-
-    getNext: function(element, elements, idx) {
+    getNext: function(element, root, idx) {
         if (py.isNone(element)) {
-            return (elements);
+            return root.firstChild;
         }
         if (py.notNone(element.firstChild)) {
             return (element.firstChild);
         }
-        if (py.notNone(element.nextSibling)) {
-            return (element.nextSibling);
+        while (py.isNone(element.nextSibling)) {
+            element = element.parentNode;
+            if (root === element) {
+                return (null);
+            }
         }
-        do {
-          element = element.parentNode;
-          if (this._root === element)
-              return (null);
-        } while (py.isNone(element.nextSibling) && element.isIn(elements));
-        if (element.nextSibling)
-          return (element.nextSibling);
-        return (null);
-      }
-  });
-
+        return (element.nextSibling);
+    }
+});

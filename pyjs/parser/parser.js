@@ -26,7 +26,7 @@ py.declare('py.parser.Handler', null, {
 
     onMatch: function onMatch(element, elements) {
 
-    },
+    }
 });
 
 /**
@@ -66,15 +66,18 @@ py.declare('py.parser.Parser', null, {
     parse: function(elements) {
         var element = null,
             i = 0;
-        if (py.len(this._handlers) === 0)
+        if (py.len(this._handlers) === 0) {
             throw Error("Cannot parse anything no handlers are defined");
+        }
         element = this.getNext(null, elements, 0);
-        if (py.isNone(element)) warn("stupid parsing ?");
+        if (py.isNone(element)) { warn("stupid parsing ?"); }
+        var check_hdlrs = function(hdlr) {
+            if (hdlr.match(element, elements)) {
+                hdlr.onMatch(element, elements);
+            }
+        };
         while (py.notNone(element)) {
-            this._handlers.iter(function(hdlr) {
-                if (hdlr.match(element, elements))
-                    hdlr.onMatch(element, elements);
-            });
+            this._handlers.iter(check_hdlrs);
             i += 1;
             element = this.getNext(element, elements, i);
         }
