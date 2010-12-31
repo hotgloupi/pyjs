@@ -6,6 +6,8 @@
  * @version 0.1
  */
 
+/*global navigator, StopIteration, ValueError*/
+
 /**
  * Browser specifics properties and methods
  * @namespace
@@ -20,9 +22,9 @@
 var BrowserDetect = {
     init: function () {
         this.browser = this.searchString(this.dataBrowser) || "An unknown browser";
-        this.version = this.searchVersion(navigator.userAgent)
-            || this.searchVersion(navigator.appVersion)
-            || "an unknown version";
+        this.version = this.searchVersion(navigator.userAgent) ||
+                       this.searchVersion(navigator.appVersion)||
+                       "an unknown version";
         this.OS = this.searchString(this.dataOS) || "an unknown OS";
     },
     searchString: function (data) {
@@ -31,16 +33,19 @@ var BrowserDetect = {
             var dataProp = data[i].prop;
             this.versionSearchString = data[i].versionSearch || data[i].identity;
             if (dataString) {
-                if (dataString.indexOf(data[i].subString) != -1)
+                if (dataString.indexOf(data[i].subString) != -1) {
                     return data[i].identity;
-            }
-            else if (dataProp)
+                }
+            } else if (dataProp) {
                 return data[i].identity;
+            }
         }
     },
     searchVersion: function (dataString) {
         var index = dataString.indexOf(this.versionSearchString);
-        if (index == -1) return;
+        if (index == -1) {
+            return;
+        }
         return parseFloat(dataString.substring(index+this.versionSearchString.length+1));
     },
     dataBrowser: [
@@ -235,7 +240,7 @@ var attributes_maps = {
                     this.type = v;
                 /*<debug*/} catch (err) {
                     // in IE, you can set type one time !
-                    throw "Cannot change type attribute to "+type;
+                    throw "Cannot change type attribute to "+this.type;
                 }/*debug>*/
             },
             'class': 'className',
@@ -270,10 +275,12 @@ var styles_maps = {
             'opacity': function(k, v) {
                 if (py.notNone(v)) {
                     this.style['-ms-filter'] = 'progid:DXImageTransform.Microsoft.Alpha(Opacity=' + v * 100 + ')';
-                    this.style['filter'] = 'progid:DXImageTransform.Microsoft.Alpha(Opacity=' + v * 100 + ')';
+                    this.style.filter = 'progid:DXImageTransform.Microsoft.Alpha(Opacity=' + v * 100 + ')';
                 } else {
                     var f = this.style.filter;
-                    if (!f) return 1;
+                    if (!f) {
+                        return 1;
+                    }
                     f = f.replace('progid:DXImageTransform.Microsoft.Alpha(Opacity=', '');
                     return parseInt(f, 10) / 100.0;
                 }

@@ -9,6 +9,9 @@
  * @namespace
  * @name py.defer
  */
+
+/*global PyError, ValueError*/
+
 py.declare('py.defer.AlreadyCalledError', PyError, {message: 'Deferred already called'});
 py.declare('py.defer.DeferredFailure', PyError, {message: 'Last callback failure'});
 

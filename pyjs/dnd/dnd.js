@@ -4,6 +4,8 @@
  * @version 0.1
  */
 
+/*global Element, clearTimeout, setTimeout*/
+
 
 py.declare('py.dnd.DndNode', null, {
     _node: null,
@@ -57,7 +59,7 @@ py.declare('py.dnd.DndNode', null, {
         //debug>
         this._node = node;
         this._args = args || {};
-        if (!(this._args.dont_start === true)) {
+        if (!this._args.dont_start) {
             this.start();
         }
         if (py.notNone(this._args.delay)) {

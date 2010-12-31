@@ -4,9 +4,9 @@
  * @version 0.1
  */
 
+/*global ValueError*/
+
 (function() {
-
-
 
 function insertionSort(a, cmp) {
     var i, tmp, len = a.length;
@@ -52,7 +52,7 @@ function quickSort(a, cmp) {
     }
 
     function qsort(a, start, end) {
-        if (!(start < end)) { return; }
+        if (start >= end) { return; }
         var idx = partition(a, start, end - 1);
         qsort(a, start, idx);
         qsort(a, idx+1, end);
@@ -110,13 +110,25 @@ var methods = {
             throw new ValueError("class argument must not be null");
         }
         /*debug>*/
-        var l = arguments.length,
-            name = obj.__class__.prototype.__name__;
+        var check_proto = function(obj_proto, proto) {
+            if (obj_proto.__name__ === proto.__name__) {
+                return true;
+            }
+            var b = obj_proto.__bases__, i = 0, len = (b ? b.length : 0);
+            while (i < len) {
+                if (check_proto(b[i].prototype, proto)) {
+                    return true;
+                }
+                i += 1;
+            }
+            return false;
+        };
+        var l = arguments.length;
         if (l === 2) {
-            return name === _class.prototype.__name__;
+            return check_proto(obj.__class__.prototype, _class.prototype);
         } else {
             for (; l>1; l -=1) {
-                if (name === arguments[l-1].prototype.__name__) {
+                if (check_proto(obj.__class__.prototype, arguments[l-1].prototype)) {
                     return true;
                 }
             }
@@ -133,7 +145,7 @@ var methods = {
     equal: function equal(a, b) {
         if (py.notNone(a) && py.notNone(b)) {
             return a.equals(b);
-        } else if (!isNUANN(a) && !isNUANN(b)) {
+        } else if (py.isNone(a) && py.isNone(b)) {
             return a === b;
         } else {return false;}
     },
@@ -216,18 +228,17 @@ for (var m in methods) {
 })();
 
 if (py.config.withGlobals === true) {
-    notNone = py.notNone;
-    isNone = py.isNone;
-    raiseNone = py.raiseNone;
-    isinstance = py.isinstance;
-    equal = py.equal;
-    len = py.len;
-    iter = py.iter;
-    str = py.str;
-    repr = py.repr;
-    sorted = py.sorted;
+    window.notNone = py.notNone;
+    window.isNone = py.isNone;
+    window.raiseNone = py.raiseNone;
+    window.isinstance = py.isinstance;
+    window.equal = py.equal;
+    window.len = py.len;
+    window.iter = py.iter;
+    window.str = py.str;
+    window.repr = py.repr;
+    window.sorted = py.sorted;
 } else {
-    iter = undefined;
     window.iter = null;
 }
 

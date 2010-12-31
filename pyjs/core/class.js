@@ -4,6 +4,8 @@
  * @version 0.1
  */
 
+/*global ValueError, StopIteration, AttributeError*/
+
 py._reserved_names = [
     '__name__',
     '__class__',
@@ -20,7 +22,7 @@ py.declareFromBuiltin = function(name, _parent, obj) {
     if (_parent) {
         _class.prototype = new _parent();
     } else {
-        _class.prototype = new Object();
+        _class.prototype = {};
         _parent = Object;
     }
     _class.prototype.constructor = _class;
@@ -148,27 +150,36 @@ py.superMixin = function(_class, obj) {
 py.superFunction = function(_class, obj, f) {
     var _parents = _class.prototype.__bases__.slice().reverse(),
     it = _parents.__iter__();
+    var super_func = function(parent) {
+        var p = parent;
+        return function() {
+            var old_super = obj.$super;
+            obj.$super = p.prototype.$super;
+            //<debug
+            try {
+                //debug>
+                var res = p.prototype[f].apply(obj, arguments);
+                //<debug
+            } catch(err) {
+                warn('Error while executing "'+p.prototype.__name__+'.'+f+'" for', obj, ':', err);
+            }
+            //debug>
+            obj.$super = old_super;
+        };
+    };
+
     while (true) {
         try {
             var p = it.next();
             //<debug
             //log('$super for function "' + f + '" in', p.prototype.__name__, 'for', obj);
             //debug>
-            if (p.prototype[f] && py.isinstance(p.prototype[f], Function)) {
-                return function super_func() {
-                    var old_super = obj.$super;
-                    obj.$super = p.prototype.$super;
-                    //<debug
-                    try {
-                        //debug>
-                        var res = p.prototype[f].apply(obj, arguments);
-                        //<debug
-                    } catch(err) {
-                        warn('Error while executing "'+p.prototype.__name__+'.'+f+'" for', obj, ':', err);
-                    }
-                    //debug>
-                    obj.$super = old_super;
-                };
+            if (py.notNone(p.prototype[f])) {
+                if (py.isinstance(p.prototype[f], Function)) {
+                    return super_func(p);
+                } else {
+                    throw new ValueError(Object.__name__ + '.' + f + ' is not callable');
+                }
             }
         } catch (err) {
             if (py.isinstance(err, StopIteration)) {
