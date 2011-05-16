@@ -165,6 +165,7 @@ py.superFunction = function(_class, obj, f) {
             }
             //debug>
             obj.$super = old_super;
+            return res;
         };
     };
 
