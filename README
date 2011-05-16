@@ -1,5 +1,5 @@
 
 All you need to do is to include "pyjs/core/core.js"
-Then you can import any package with py.importModule('py.defer.defer');
+Then you can import any package with py.importModule('py.defer.deferred');
 :)
 Doc will come back soon !
