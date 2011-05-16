@@ -1,13 +1,5 @@
 
-python dependencies (with easy_install):
-    genshi
-    cherrypy
-    simplejson
-    mutagen
-
-with your package system :
-    mad and bindings (py-mad)
-
-
-
-
+All you need to do is to include "pyjs/core/core.js"
+Then you can import any package with py.importModule('py.defer.defer');
+:)
+Doc will come back soon !
