@@ -8,11 +8,11 @@ HTML		= $(SRCS:.txt=.html)
 
 all: $(HTML)
 
-$(HTML): $(SRCS)
+##$(HTML): $(SRCS)
 
 %.html:%.txt
 	@echo "$< -> $@"
-	@asciidoc -o $@ $<
+	@asciidoc -b xhtml11 -o $@ $<
 
 clean:
 	rm -f $(HTML)
