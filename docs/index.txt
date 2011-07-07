@@ -1,0 +1,37 @@
+
+
+== PyJS Home page
+
+PyJS is a JavaScript library and its goal is to imitate Python syntax, simplify
+code writing and remove differences between browsers.
+
+
+=== Features
+The most significant feature of PyJS is modifying JavaScript Objects,
+particularly native objects like `Object`, `Array` or `String` and make them
+easy to use.
+
+It takes ideas from famous libraries like Dojo, Prototype or jQuery, but with a
+Pythonic syntax.
+
+Main features:
+
+ * BSD licencing
+ * New methods to Javascript objects
+ * Easy ways to manipulate DOM nodes
+ * Modules managing and packaging
+ * Use of class
+ * link:debug_testing.html[
+        Adding test in code, with a way to remove them when packaging
+    ]
+ * And lots of other things ...
+
+=== Resources
+
+Some documentations available for now, but are growing :
+
+ * Your first step on the link:getting_started.html[getting started] page.
+ * The link:download.html[Download page]
+ * link:user_guide.html[PyJS Documentation]
+ * link:http://api.pyjs.info[API of PyJS]
+ * Run PyJS link:tests.pyjs.info[Tests] !

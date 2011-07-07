@@ -1,0 +1,21 @@
+
+== Getting started
+
+First of all, you must download PyJS link:download.html[here].
+
+this archive contains the doc reference of the library (in `docs`) and the
+library it-self : the sub-directory `pyjs`.
+
+You only need to place it at the root of your site, and include it with
+something like :
+
+{{{
+<html>
+  <head>
+     <script type="text/javascript" src="/pyjs/core/core.js"></script>
+  </head>
+</html>
+}}}
+
+You can use the library in next `script` tag :D
+
