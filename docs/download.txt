@@ -16,6 +16,6 @@ repository is:
 === Get prepackaged version
 
 If you just need a working version to embed in your website,
-just download the link:http://hotgloupi.fr/xd.py.js[last version].
+just download the link:http://hotgloupi.fr/javascript/xd.py.js[last version].
 
 Or you can pack it yourself link:sandbox[here]
