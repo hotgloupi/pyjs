@@ -57,8 +57,8 @@ Object.prototype.__repr__ = function() {
  * @see <a href="http://docs.python.org/library/stdtypes.html#iterator-types">Python Iterators</a>
  */
 Object.prototype.__iter__ = function() {
-    var keys = [];
-    for (var k in this) {
+    var keys = [], k;
+    for (k in this) {
         if (this.hasOwnProperty(k)) {
             keys.append(k);
         }

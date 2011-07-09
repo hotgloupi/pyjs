@@ -42,42 +42,41 @@ if (typeof console != "undefined") {
 var py = null;
 
 (function(){
-    var dom_loaded = false;
-    // http://www.kryogenix.org/days/2007/09/26/shortloaded
-    (function () {
-        var i = function() {
-                dom_loaded = true;
-                if (typeof(py) !== "undefined" && py._onLoad) {
-                    py._onLoad();
-                }
-            },
-            u = navigator.userAgent,
-            e = /*@cc_on!@*/false;
-        if (/webkit/i.test(u)) {
-            setTimeout(function() {
-                var dr = document.readyState;
-                if (dr == "loaded" || dr == "complete") {
-                    i();
-                } else {
-                    setTimeout(arguments.callee, 10);
-                }
-            }, 10);
-        }
-        else if ((/mozilla/i.test(u) && !/(compati)/.test(u)) || (/opera/i.test(u))) {
-            document.addEventListener("DOMContentLoaded", i, false);
-        } else if (e) {
-            var t = document.createElement('doc:rdy');
-            try {
-                t.doScroll('left');
-                i();
-                t = null;
-            } catch (e) {
-                setTimeout(arguments.callee, 0);
+    var dom_loaded = false,
+        listenOnLoad = function () { // http://www.kryogenix.org/days/2007/09/26/shortloaded
+            var i = function() {
+                    dom_loaded = true;
+                    if (typeof(py) !== "undefined" && py._onLoad) {
+                        py._onLoad();
+                    }
+                },
+                u = navigator.userAgent,
+                e = /*@cc_on!@*/false;
+            if (/webkit/i.test(u)) {
+                setTimeout(function() {
+                    var dr = document.readyState;
+                    if (dr == "loaded" || dr == "complete") {
+                        i();
+                    } else {
+                        setTimeout(arguments.callee, 10);
+                    }
+                }, 10);
             }
-        } else {
-            window.onload = i;
-        }
-    })();
+            else if ((/mozilla/i.test(u) && !/(compati)/.test(u)) || (/opera/i.test(u))) {
+                document.addEventListener("DOMContentLoaded", i, false);
+            } else if (e) {
+                var t = document.createElement('doc:rdy');
+                try {
+                    t.doScroll('left');
+                    i();
+                    t = null;
+                } catch (e) {
+                    setTimeout(arguments.callee, 0);
+                }
+            } else {
+                window.onload = i;
+            }
+        };
 
     /**
      * Global PyJS namespace
@@ -411,7 +410,9 @@ var py = null;
 
     };
 
+
     py.global = this;
+    listenOnLoad();
     var __init_pyjs_interval__ = null,
         __init_pyjs__ = function() {
         if (!py.getHeader()) {
