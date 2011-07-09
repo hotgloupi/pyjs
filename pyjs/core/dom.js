@@ -204,7 +204,8 @@ py.extendNamespace('py.dom', {
      * @returns {Int[]} left and top offset
      */
     _getOffsets: function _getOffsets(el) {
-        var l = t = 0;
+        var l = 0,
+            t = 0;
         if (el.offsetParent) {
             do {
                 l += el.offsetLeft;
