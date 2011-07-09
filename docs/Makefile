@@ -25,11 +25,11 @@ clean:
 	rm -f $(HTML)
 
 install-files: $(INSTALLED)
-	cp -r --parents $(HTML) $(INSTALLDIR)
+	cp -r --parents $(HTML) $(DESTDIR)
 
 
 $(INSTALLED): $(HTML)
-	@echo "installing $@ into $(INSTALLDIR)"
+	@echo "installing $@ into $(DESTDIR)"
 	@mkdir -p `dirname $@`
 
 install: install-files
