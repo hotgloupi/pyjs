@@ -26,13 +26,23 @@ clean:
 
 install-files: $(INSTALLED)
 	cp -r --parents $(HTML) $(DESTDIR)
+	cp -r reference $(DESTDIR)
 
 
 $(INSTALLED): $(HTML)
 	@echo "installing $@ into $(DESTDIR)"
 	@mkdir -p `dirname $@`
 
-install: install-files
+reference:
+	java \
+		-jar jsdoc-toolkit/jsrun.jar \
+		jsdoc-toolkit/app/run.js \
+		-t=jsdoc-toolkit/templates/jsdoc \
+		-d=reference \
+		../pyjs \
+		-e=utf8 -r -p\
+
+install: install-files reference
 
 fclean: clean
 
