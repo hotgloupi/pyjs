@@ -3,11 +3,14 @@
  * @author <a href="mailto:raphael.londeix@gmail.com">Raphaël Londeix</a>
  * @version 0.1
  */
-*global clearInterval: false, clearTimeout: false, document: false, event: false,
-        frames: false, history: false, Image: false, location: false, name: false,
-        navigator: false, Option: false, parent: false, screen: false,
-        setInterval: false, setTimeout: false, window: false, XMLHttpRequest: false
+/*jslint sloppy: true, eqeq: true, white: true, maxerr: 50, indent: 4 */
+/*global clearInterval: false, clearTimeout: false, document: false, event: false,
+         frames: false, history: false, Image: false, location: false, name: false,
+         navigator: false, Option: false, parent: false, screen: false, setInterval: false,
+         setTimeout: false, window: false, XMLHttpRequest: false,
+         console: true, log: true, warn: true
 */
+
 if (typeof console != "undefined") {
     if (typeof console.log.apply != "undefined") {
         if (typeof log === "undefined") {
