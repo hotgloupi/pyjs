@@ -126,7 +126,8 @@ var py = null;
                 });
             }
             if (typeof pyConfig !== "undefined") { // config from user
-                for (var c in pyConfig) {
+                var c;
+                for (c in pyConfig) {
                     if (pyConfig.hasOwnProperty(c)) {
                         this.config[c] = pyConfig[c];
                     }
