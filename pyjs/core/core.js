@@ -3,7 +3,7 @@
  * @author <a href="mailto:raphael.londeix@gmail.com">Raphaël Londeix</a>
  * @version 0.1
  */
-/*jslint sloppy: true, eqeq: true, white: true, maxerr: 50, indent: 4, nomen: true */
+/*jslint sloppy: true, eqeq: true, white: true, maxerr: 50, indent: 4, nomen: true, plusplus: true */
 /*global clearInterval: false, clearTimeout: false, document: false, event: false,
          frames: false, history: false, Image: false, location: false, name: false,
          navigator: false, Option: false, parent: false, screen: false, setInterval: false,
@@ -208,9 +208,13 @@ var py = null;
         loadJs: function(/*String*/ url) {
             if (py.config.preventCache === true) {
                 var d = new Date();
-                if (url.indexOf('?') === -1) {url += '?';}
-                else {url += '&';}
-                url += 'preventCache='+d.getTime()+'.'+d.getMilliseconds();
+                if (url.indexOf('?') === -1) {
+                    url += '?';
+                }
+                else {
+                    url += '&';
+                }
+                url += 'preventCache=' + d.getTime().toString() + '.' + d.getMilliseconds().toString();
             }
             var xhr = this.xhrObj();
             xhr.open('GET', url, false);
@@ -228,7 +232,7 @@ var py = null;
          * @returns {String} Url of the module
          */
         getModuleUrl: function(name) {
-            var parts = name.split('.'), folder, filename;
+            var parts = name.split('.'), folder, filename, i;
             if (parts.length == 1) {
                 folder = py._modules_path.py.replace('pyjs/', '');
                 filename = name+'.js';
@@ -239,12 +243,12 @@ var py = null;
                 } else {
                     folder = py._modules_path.py.replace('pyjs/', '');
                 }
-                for (var i=0, l=parts.length; i<l-1; i++) {
+                for (i = 0, l = parts.length; i < l-1; i++) {
                     folder += parts[i] + '/';
                 }
                 filename = parts.pop() + '.js';
             }
-            return folder+filename;
+            return folder + filename;
         },
 
         /**
