@@ -7,7 +7,9 @@
         <link rel="icon" type="image/png" href="@FIXME@" />
         <script type="text/javascript" src="pyjs/core/core.js"></script>
 	<script>
-		py.packMe({'lvl':0});
+		py.addOnLoad(function() {
+			py.packMe({'lvl':0});
+		});
 	</script>
     </head>
     <body>
