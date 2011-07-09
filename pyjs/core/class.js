@@ -31,7 +31,8 @@ py.declareFromBuiltin = function(name, _parent, obj) {
     _class.prototype.__bases__ = [_parent.prototype];
 
 
-    for (var k in obj) {
+    var k;
+    for (k in obj) {
         if (obj.hasOwnProperty(k) && k !== "constructor") {
             _class.prototype[k] = obj[k];
         }

@@ -130,8 +130,8 @@ String.prototype.next = function() {
  */
 if (!String.prototype.trim) {
     String.prototype.trim = function trim() {
-        var str = this.replace(/^\s+/, '');
-        for (var i = str.length - 1; i >= 0; i--) {
+        var str = this.replace(/^\s+/, ''), i;
+        for (i = str.length - 1; i >= 0; i--) {
             if (/\S/.test(str.charAt(i))) {
                 str = str.substring(0, i + 1);
                 break;
@@ -154,8 +154,9 @@ String.prototype.strip =  function strip(chars) {
     }
     var re_begin = new RegExp('^['+chars+']+'),
         re_char = new RegExp('[^'+chars+']'),
-        str = this.replace(re_begin, '');
-    for (var i = str.length - 1; i >= 0; i--) {
+        str = this.replace(re_begin, ''),
+        i;
+    for (i = str.length - 1; i >= 0; i--) {
         if (re_char.test(str.charAt(i))) {
             str = str.substring(0, i + 1);
             break;
@@ -181,8 +182,9 @@ String.prototype.lstrip = function lstrip(chars) {
  */
 String.prototype.rstrip = function rstrip(chars) {
     var str = this,
-        re = py.notNone(chars) ? new RegExp('[^'+chars+']') : /\S/;
-    for (var i = str.length - 1; i >= 0; i--) {
+        re = py.notNone(chars) ? new RegExp('[^'+chars+']') : /\S/,
+        i;
+    for (i = str.length - 1; i >= 0; i--) {
         if (re.test(str.charAt(i))) {
             str = str.substring(0, i + 1);
             break;

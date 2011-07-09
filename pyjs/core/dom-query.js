@@ -139,9 +139,11 @@ if ($test($element, $arguments)) $results.append($element);
 // -----------------------------------------------------------------------
 
 pseudoClasses["link"] = function($element) {
-    var $links = getDocument($element).links;
-    if ($links) for (var i = 0; i < $links.length; i++) {
-        if ($links[i] == $element) return true;
+    var $links = getDocument($element).links, i;
+    if ($links) {
+        for (i = 0; i < $links.length; i++) {
+            if ($links[i] == $element) { return true; }
+        }
     }
 };
 
@@ -340,19 +342,22 @@ selectors[">"] = function($results, $from, $tagName, $namespace) {
 
 // sibling selector
 selectors["+"] = function($results, $from, $tagName, $namespace) {
-    for (var i = 0; i < $from.length; i++) {
-    var $element = nextElementSibling($from[i]);
-    if ($element && compareTagName($element, $tagName, $namespace))
-    $results.push($element);
-}
+    var i, l;
+    for (i = 0, l = $from.length; i < l; i++) {
+        var $element = nextElementSibling($from[i]);
+        if ($element && compareTagName($element, $tagName, $namespace)) {
+            $results.push($element);
+        }
+    }
 };
 
 // attribute selector
 selectors["@"] = function($results, $from, $attributeSelectorID) {
     var $test = attributeSelectors[$attributeSelectorID].test;
     var $element, i;
-    for (i = 0; ($element = $from[i]); i++)
-    if ($test($element)) $results.push($element);
+    for (i = 0; ($element = $from[i]); i++) {
+        if ($test($element)) { $results.push($element); }
+    }
 };
 
 // -----------------------------------------------------------------------

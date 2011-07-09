@@ -53,12 +53,12 @@ Array.prototype.append = function() {
         return _push.apply(this, arguments);
     } :
     function append() {
-        var args = arguments, l = args.length, j = this.length;
-      	for (var i=0; i < l; i++) {
+        var args = arguments, l = args.length, j = this.length, i;
+        for (i = 0; i < l; i++) {
             this[j] = args[i];
             j++;
-	    }
-	    return j;
+        }
+        return j;
     };
 }();
 

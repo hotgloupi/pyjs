@@ -218,7 +218,8 @@ var methods = {
 };
 
 //WARNING cannot use update method here, isinstance is used ...
-for (var m in methods) {
+var m;
+for (m in methods) {
     if (methods.hasOwnProperty(m)) {
         py[m] = methods[m];
     }

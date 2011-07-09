@@ -28,7 +28,8 @@ var BrowserDetect = {
         this.OS = this.searchString(this.dataOS) || "an unknown OS";
     },
     searchString: function (data) {
-        for (var i=0;i<data.length;i++) {
+        var i, l;
+        for (i = 0, data = data.length; i < l; i++) {
             var dataString = data[i].string;
             var dataProp = data[i].prop;
             this.versionSearchString = data[i].versionSearch || data[i].identity;
