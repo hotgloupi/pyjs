@@ -15,26 +15,28 @@ if (typeof console != "undefined") {
     if (typeof console.log.apply != "undefined") {
         if (typeof log === "undefined") {
             log = function() {
-                try{
+                try {
                     console.log.apply(console, arguments);
-                } catch(err) {}
+                } catch (err) {}
             };
         }
         if (typeof warn === "undefined") {
-            warn = function(){
-                try{
+            warn = function() {
+                try {
                     console.warn.apply(console, arguments);
-                } catch(err) {}
+                } catch (err) {}
             };
         }
     } else {
-        if (typeof log === "undefined")
+        if (typeof log === "undefined") {
             log = console.log;
-        if (typeof warn === "undefined")
+        }
+        if (typeof warn === "undefined") {
             warn = console.warn;
+        }
     }
 } else {
-    log = warn = function(){};
+    log = warn = function() {};
 }
 
 var py = null;
