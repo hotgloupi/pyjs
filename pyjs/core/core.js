@@ -46,6 +46,7 @@ var py = null;
         listenOnLoad = function () { // http://www.kryogenix.org/days/2007/09/26/shortloaded
             var i = function() {
                     dom_loaded = true;
+                    log("Dom loaded ");
                     if (typeof(py) !== "undefined" && py._onLoad) {
                         py._onLoad();
                     }
@@ -317,23 +318,21 @@ var py = null;
                         return new XMLHttpRequest();
                     }
                 },
-                self = this,
                 xhr_obj = null,
                 working_method,
+                setWorkingMethod = function() { py.xhrObj = working_method; },
                 i;
             // According to Dojo, we try ActiveXObject before others
             // beceause in IE7, when local loading, XmlHttpRequest() fails
             for (i = 1; i < 5; i++) {
                 try {
-                    working_method = methods['f'+i];
+                    working_method = methods['f' + i.toString()];
                     xhr_obj = working_method();
                 } catch (e) {
                     xhr_obj = null;
                 }
                 if (xhr_obj !== null) {
-                    setTimeout(function() {
-                        self.xhrObj = working_method;
-                    }, 0);
+                    setTimeout(setWorkingMethod, 1);
                     return xhr_obj;
                 }
             }
@@ -348,9 +347,9 @@ var py = null;
         isXhrOk: function(xhr) {    // From Dojo
             var stat = xhr.status || 0;
             return (
-                stat >= 200 && stat < 300) || 			// allow any 2XX response code
+                stat >= 200 && stat < 300) ||       // allow any 2XX response code
                 stat == 304 ||
-                stat == 1223 || 						// get it out of the cache
+                stat == 1223 ||                     // get it out of the cache
                 (!stat && (location.protocol=="file:" || location.protocol=="chrome:")
             );
         },
