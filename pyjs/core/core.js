@@ -232,7 +232,7 @@ var py = null;
          * @returns {String} Url of the module
          */
         getModuleUrl: function(name) {
-            var parts = name.split('.'), folder, filename, i;
+            var parts = name.split('.'), folder, filename, i, l;
             if (parts.length == 1) {
                 folder = py._modules_path.py.replace('pyjs/', '');
                 filename = name+'.js';
@@ -243,7 +243,7 @@ var py = null;
                 } else {
                     folder = py._modules_path.py.replace('pyjs/', '');
                 }
-                for (i = 0, l = parts.length; i < l-1; i++) {
+                for (i = 0, l = parts.length; i < l - 1; i++) {
                     folder += parts[i] + '/';
                 }
                 filename = parts.pop() + '.js';
@@ -257,7 +257,8 @@ var py = null;
          * @private
          */
         _importModule: function(/*String*/ name) {
-            for (var i = 0, len = this._loaded_modules.length; i < len; ++i)
+            var i, len;
+            for (i = 0, len = this._loaded_modules.length; i < len; ++i)
             {
                 if (this._loaded_modules[i] == name)
                     return ;
