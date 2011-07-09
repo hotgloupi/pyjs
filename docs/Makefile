@@ -9,7 +9,7 @@ SRCS		= index.txt			\
 
 
 HTML		= $(SRCS:.txt=.html)
-INSTALLED	= $(addprefix $(INSTALLDIR)/,$(HTML))
+INSTALLED	= $(addprefix $(DESTDIR)/,$(HTML))
 
 .PHONY: all clean fclean re install install-files
 
