@@ -7,7 +7,7 @@
 /*global clearInterval: false, clearTimeout: false, document: false, event: false,
          frames: false, history: false, Image: false, location: false, name: false,
          navigator: false, Option: false, parent: false, screen: false, setInterval: false,
-         setTimeout: false, window: false, XMLHttpRequest: false,
+         setTimeout: false, window: false, XMLHttpRequest: false, ActiveXObject: false,
          console: true, log: true, warn: true, pyConfig: true
 */
 
@@ -44,9 +44,15 @@ var py = null;
 (function(){
     var dom_loaded = false;
     // http://www.kryogenix.org/days/2007/09/26/shortloaded
-    (function (i) {
-        var e = /*@cc_on!@*/false;
-        var u = navigator.userAgent;
+    (function () {
+        var i = function() {
+                dom_loaded = true;
+                if (typeof(py) !== "undefined" && py._onLoad) {
+                    py._onLoad();
+                }
+            },
+            u = navigator.userAgent,
+            e = /*@cc_on!@*/false;
         if (/webkit/i.test(u)) {
             setTimeout(function() {
                 var dr = document.readyState;
@@ -60,25 +66,18 @@ var py = null;
         else if ((/mozilla/i.test(u) && !/(compati)/.test(u)) || (/opera/i.test(u))) {
             document.addEventListener("DOMContentLoaded", i, false);
         } else if (e) {
-            (function() {
-                var t = document.createElement('doc:rdy');
-                try {
-                    t.doScroll('left');
-                    i();
-                    t = null;
-                } catch (e) {
-                    setTimeout(arguments.callee, 0);
-                }
-            })();
+            var t = document.createElement('doc:rdy');
+            try {
+                t.doScroll('left');
+                i();
+                t = null;
+            } catch (e) {
+                setTimeout(arguments.callee, 0);
+            }
         } else {
             window.onload = i;
         }
-    })(function() {
-        dom_loaded = true;
-        if (typeof(py) !== "undefined" && py._onLoad) {
-            py._onLoad();
-        }
-    });
+    })();
 
     /**
      * Global PyJS namespace
@@ -260,8 +259,9 @@ var py = null;
             var i, len;
             for (i = 0, len = this._loaded_modules.length; i < len; ++i)
             {
-                if (this._loaded_modules[i] == name)
-                    return ;
+                if (this._loaded_modules[i] === name) {
+                    return;
+                }
             }
             log('import module: ', name);
             var src = this.loadJs(py.getModuleUrl(name));
@@ -290,7 +290,7 @@ var py = null;
         _importPendingModules: function _importPendingModules() {
             var m;
             this._can_import_modules = true;
-            while (m = py._pending_modules.shift()) {
+            while ((m = py._pending_modules.shift())) {
                 py._importModule(m);
             }
             // Just in case...
@@ -305,25 +305,26 @@ var py = null;
          */
         xhrObj: function() {
             var methods = {
-                f1: function() {
-                    return new ActiveXObject('Msxml2.XMLHTTP');
+                    f1: function() {
+                        return new ActiveXObject('Msxml2.XMLHTTP');
+                    },
+                    f2: function() {
+                        return new ActiveXObject('Microsoft.XMLHTTP');
+                    },
+                    f3: function() {
+                        return new ActiveXObject('Msxml2.XMLHTTP.4.0');
+                    },
+                    f4: function() {
+                        return new XMLHttpRequest();
+                    }
                 },
-                f2: function() {
-                    return new ActiveXObject('Microsoft.XMLHTTP');
-                },
-                f3: function() {
-                    return new ActiveXObject('Msxml2.XMLHTTP.4.0');
-                },
-                f4: function() {
-                    return new XMLHttpRequest();
-                }
-            },
-            self = this,
-            xhr_obj = null,
-            working_method;
+                self = this,
+                xhr_obj = null,
+                working_method,
+                i;
             // According to Dojo, we try ActiveXObject before others
             // beceause in IE7, when local loading, XmlHttpRequest() fails
-            for (var i=1; i<5; i++) {
+            for (i = 1; i < 5; i++) {
                 try {
                     working_method = methods['f'+i];
                     xhr_obj = working_method();
