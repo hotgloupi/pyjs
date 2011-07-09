@@ -407,6 +407,9 @@ py.importModule('py.core.browser_event');
 //<debug
 py.importModule('py.packer.packer');
 py.packMe = function packMe(args) {
+    if (!args) {
+        args = {'lvl': 0};
+    }
     var modules = py._loaded_modules.filter(function(mod) {
         return !mod.startswith("py.packer");
     });

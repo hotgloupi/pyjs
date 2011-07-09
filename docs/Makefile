@@ -1,5 +1,9 @@
 
 DESTDIR		?= /usr/local/share/doc/pyjs
+JS_SRCS		= $(wildcard ../pyjs/*.js)
+JS_SRCS		+= $(wildcard ../pyjs/*/*.js)
+JS_SRCS		+= $(wildcard ../pyjs/*/*/*.js)
+JS_SRCS		+= $(wildcard ../pyjs/*/*/*/*.js)
 
 SRCS		= index.txt			\
 		  getting_started.txt		\
@@ -16,7 +20,7 @@ INSTALLED	= $(addprefix $(DESTDIR)/,$(HTML))
 
 .PHONY: all clean fclean re install install-files
 
-all: $(HTML)
+all: $(HTML) reference sandbox/pyjs
 
 ##$(HTML): $(SRCS)
 
@@ -27,16 +31,15 @@ all: $(HTML)
 clean:
 	rm -f $(HTML)
 
-install-files: $(INSTALLED) reference
-	cp -r --parents $(HTML) $(DESTDIR)
-	cp -r reference $(DESTDIR)
-
-
 $(INSTALLED): $(HTML)
 	@echo "installing $@ into $(DESTDIR)"
 	@mkdir -p `dirname $@`
 
-reference:
+install-files: $(INSTALLED)
+	cp -r --parents $(HTML) $(DESTDIR)
+
+reference: $(JS_SRCS)
+	rm -rf reference
 	java \
 		-jar ../jsdoc-toolkit/jsrun.jar \
 		../jsdoc-toolkit/app/run.js \
@@ -45,9 +48,21 @@ reference:
 		../pyjs \
 		-e=utf8 -r -p\
 
-install: install-files
+sandbox/pyjs: $(JS_SRCS)
+	rm -rf sandbox/pyjs
+	cp -r ../pyjs sandbox/
+
+$(DESTDIR)/sandbox: sandbox/pyjs sandbox/index.html
+	cp -r sandbox $(DESTDIR)
+
+$(DESTDIR)/reference: reference
+	cp -r reference $(DESTDIR)
+
+install: install-files $(DESTDIR)/reference $(DESTDIR)/sandbox
 
 fclean: clean
+	rm -rf reference
+	rm -rf sandbox/pyjs
 
 re: fclean all
 
