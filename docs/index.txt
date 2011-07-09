@@ -32,6 +32,7 @@ Some documentations available for now, but are growing :
 
  * Your first step on the link:getting_started.html[getting started] page.
  * The link:download.html[Download page]
- * link:user_guide.html[PyJS Documentation]
- * link:http://api.pyjs.info[API of PyJS]
- * Run PyJS link:tests.pyjs.info[Tests] !
+ * link:docs.html[PyJS Documentation]
+ * link:modules.html[Modules documentation]
+ * link:http://reference.pyjs.info[Reference documentation of PyJS]
+ * Run PyJS link:http://tests.pyjs.info[Tests] !

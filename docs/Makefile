@@ -1,5 +1,11 @@
-SRCS		= index.txt \
-		  getting_started.txt
+SRCS		= index.txt			\
+		  getting_started.txt		\
+		  download.txt			\
+		  docs.txt			\
+		  docs/prototype.txt		\
+		  docs/core.txt			\
+		  docs/bootstrap_config.txt	\
+		  modules.txt			\
 
 
 HTML		= $(SRCS:.txt=.html)

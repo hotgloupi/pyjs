@@ -1,0 +1,17 @@
+
+== Modules documentations
+
+=== link:modules/cookie.html[Modules/cookie]
+Allow easy access and modification to cookies.
+
+=== link:modules/defer.html[Modules/defer]
+Provide `Deferred` class and ajax facilities.
+
+=== link:modules/json.html[Modules/json]
+Convert Javascript object from/to JSON.
+
+=== link:modules/packer.html[Modules/packer]
+Provide an easy way to pack all javascript files in one.
+
+=== link:modules/dnd.html[Modules/dnd]
+Easy to use, cross-browser drag&drop tools.

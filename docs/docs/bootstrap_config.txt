@@ -1,0 +1,25 @@
+
+== PyJS config
+
+It's possible to config such of thing. You just need to declare a variable
+called `pyConfig` _before_ include the library. The is the structure of this
+variable:
+
+-----------------------------------------------------------------------------
+pyConfig = {
+    var1: 'val1',
+    ...
+};
+-----------------------------------------------------------------------------
+
+Configurations points and default values are:
+  * `extremist = false` : set to true, it remove certain native function like
+			  `Array.prototype.push` (which is `append` in PyJS)
+  * `withGlobals = true` : set to true, make described functions in
+			   link:prototype.html[Docs/Prototype] and
+			   link:http://reference.pyjs.info/symbols/py.html[
+			   reference] globals.
+  * `preventCache = true`: set to true, it force reloading of modules by
+			   appending to urls string like
+			   `&preventCache=12456454.124`
+

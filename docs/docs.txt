@@ -1,0 +1,14 @@
+
+== PyJS Documentation
+
+=== link:docs/prototype.html[Docs/Prototype]
+Modifications of javascript prototypes `Array`, `String`, `Object`, `Element`
+and `Function`.
+
+=== link:docs/core.html[Docs/Core]
+Core of PyJS library allows you to import or declare module. It makes easy
+to augment namespaces and declare classes.
+
+=== link:docs/bootstrap_config.html[Docs/BootstrapConfig]
+Configuration of PyJS and description of currently recognized options.
+

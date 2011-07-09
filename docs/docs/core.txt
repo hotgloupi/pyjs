@@ -1,0 +1,203 @@
+
+== The core of the library
+
+The core of the library do not provide lots of things, because objet's methods
+are defined and implemented in their prototype, and, in other hand, there are
+seperate modules that provide most of functionnality needed by the end user.
+But, the ''low level'' of the library give you the ability te easily create
+modules and classes.
+
+=== Module management ===
+
+Modules are nothing else JavaScript files. PyJs's files are of course in the
+PyJS directory, which is the root. For exemple, if you want to load the module
+`packer`, located in `pyjs/packer/packer.js`, you'll write:
+-----------------------------------------------------------------------------
+py.importModule('py.packer.packer');
+-----------------------------------------------------------------------------
+
+You may notive we do not specify the extension `.js` of the file. In fact, all
+imported modules will be search from their first name part, here `py`. The
+''namespace'' is automatically saved by PyJS when its starting, but it is
+totaly possible to register your own:
+-----------------------------------------------------------------------------
+py.registerModulePath('mylib', '/static/resources/JS/MyLib');
+py.importModule('mylib.foo.bar'); // will load /static/resources/JS/MyLib/foo/bar.js
+-----------------------------------------------------------------------------
+
+=== The namespaces
+
+To avoid conflicts between modules, you may put all of your code in
+''namespaces''. PyJS library, except some globals, use `py` to prefix all its
+component. A great tools may be used to create or extend namespaces, it's the
+function `extendNamespace`:
+-----------------------------------------------------------------------------
+py.extendNamespace('mylib.foo.bar', {
+    member1: 'pif',
+
+    method1: function(){
+        alert('Im very usefull !');
+        mylib.foo.bar.member1 === this.member1; // true
+    }
+});
+-----------------------------------------------------------------------------
+
+This function don't do anything that's really awesome, it create a hierarchical
+list of objets, which we could do by hand:
+-----------------------------------------------------------------------------
+if (typeof mylib == "undefined) {
+    mylib = {};
+}
+if (typeof mylib.foo == "undefined") {
+    mylib.foo = {};
+}
+if (typeof mylib.foo.bar == "undefined") {
+    mylib.foo.bar = {};
+}
+mylib.foo.bar.update({
+    // same code here
+});
+-----------------------------------------------------------------------------
+
+Notice we omit to test on each step if for example `mylib.foo` already exists,
+if it is an objets... I advice you to use this method that simplify writting
+are make convinients tests.
+
+=== Classes
+
+==== Simple Classes
+
+All respectable library provide a simple way to create and manipulate classes.
+This is the proposed syntax:
+-----------------------------------------------------------------------------
+py.declare('mylib.foo.bar.Baz', null, {
+
+    __init__: function() {
+        alert('Class creation');
+    },
+
+    method: function() {
+        alert('my method');
+    }
+});
+-----------------------------------------------------------------------------
+
+If you have used the library Dojo, you may not be surprised with this. For
+others, first arguments is the name of the class, and in this example, this
+class is created within the ''namespace'' `mylib.foo.bar`. Second argument
+is an array of parents classes. At the end, the third is the class itself,
+that we can use like this:
+-----------------------------------------------------------------------------
+var b = new mylib.foo.bar.Baz(); // Class creation
+b.method(); // my method
+-----------------------------------------------------------------------------
+
+You might see that the class constructor is the method called `__init__`,
+which take arguments given when creating the class.
+
+==== The inheritence
+
+Obviously, classes are usefull when you can ''derive'' them. Fortunately, it's
+possible:
+
+-----------------------------------------------------------------------------
+py.declare('A', null, {
+    m: function() { alert('m from A'); },
+    m1: function() { alert('m1 from A'); }
+});
+
+py.declare('B', A, {
+    m: function() { alert('m from B'); },
+    m1: function() { alert('m1 from B'); }
+});
+
+py.declare('C', B, {
+    m: function() { alert('m from C'); }
+});
+-----------------------------------------------------------------------------
+
+We have defined three classes +A+, +B+ and +C+. The last one 'derive' from
+`A` and `B`, it have their methods. We can now write:
+
+-----------------------------------------------------------------------------
+var c = new C();
+c.m(); // m from C
+c.m1(); // m1 from B
+-----------------------------------------------------------------------------
+
+The order of inheritance declaration is important, `A` methods are overwritten
+by `B` ones. But it's possible to call parent method from a subclass. There
+are two way to do that, from outside of the class, and inside of the class.
+With last classes examples, we can write :
+-----------------------------------------------------------------------------
+var b_method = py.$super(C, c, 'm');
+b_method(); // m from B
+var a_method = py.$super(B, c, 'm');
+a_method(); // m from A
+-----------------------------------------------------------------------------
+
+The function `py.$super` take three arguments, respectively the  classe
+(derivated), the object, and the name of the method to call. It returns the
+parent function found. But most of the time, you will call the parent within a
+subclass method:
+-----------------------------------------------------------------------------
+py.declare('A', null, {
+    m: function() {
+        alert('m from A');
+    }
+});
+
+py.declare('B', [A], {
+    m: function() {
+        this.$super(arguments);
+        alert('m from B');
+    }
+});
+
+b = new B();
+b.m(); // 'm from A' and 'm from B'
+-----------------------------------------------------------------------------
+
+The method super is implicitly available in each class and take for first
+arguments, either the special objet `arguments`, or a string that is the name
+of the function. You must keep in mind that there are no other method for the
+poor method `$super` to find which method you want to call. If you prefer to
+give the variable `arguments`, it will be used to give real arguments to the
+parent function. But you may want to give others arguments, but fortunatly
+it is possible to pass an array, and it will use its content instead.
+-----------------------------------------------------------------------------
+py.declare('A', null, {
+    m: function(a, b) {
+        alert('a = '+a+', b = '+b);
+    }
+});
+
+py.declare('B', [A], {
+    m: function(a, b) {
+        this.$super(arguments);
+        this.$super(arguments, [a+1, b+1]);
+        this.$super('m', [a, b]);
+        this.$super('m');
+    }
+});
+
+b = new B();
+b.m(1, 2); // a = 1, b = 2
+           // a = 2, b = 3
+           // a = 1, b = 2
+           // a = undefined, b = undefined
+-----------------------------------------------------------------------------
+
+=== The browser
+
+As PyJS want to be Cross-browser, it try to hide differences. Most of
+differences are stored in the module `py.core.browser`, when it's possible. The
+object created when you load PyJS is `py.browser`. It have some properties that
+make easy to find the browser, it's version and others convinient methods.
+
+The property  `name`, `version` et `OS` are respectively the browser name, it's
+version and the operating system used. Those values are obtained from the
+script of link:http://www.quirksmode.org/js/detect.html[Peter-Paul Koch]. Other
+methods are self-explanatory and described in the
+link:http://reference.pyjs.info[reference documentation].
+

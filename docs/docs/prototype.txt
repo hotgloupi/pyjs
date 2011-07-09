@@ -1,0 +1,317 @@
+
+== Standard objects improvements
+
+=== Synopsis
+First view of the syntax :
+
+-----------------------------------------------------------------------------
+var my_obj = {
+    foor: 'bar',
+    pif: 'paf',
+    member: 2
+};
+var my_str = '';
+mon_obj.iter(function(k) { my_str += k });
+
+my_str === 'foopifmember'; //true
+
+my_str = '';
+mon_obj.itervalues(function(v) { my_str += v });
+
+my_str === 'barpaf2'; // true
+
+var upper = String.prototype.toUpperCase;
+
+my_str = mon_obj.values().map(upper).join('>');
+
+my_str === 'BAR>PAF>2';
+-----------------------------------------------------------------------------
+
+A set of method are added to objects and make them really easy to use
+
+=== Deep modifications
+
+Of course, in order to make things easy, JavaScript is modified, particularly
+base objects. The JavaScript way to do this to modifying prototype, and first
+modification I'll speak about is the property called `class`. This simple
+string give us the ability to identify any object, and make easy to know if we
+have for example an Object, or a Function. Two other important methods (but
+optionals) are `__str__` et `__repr__` which respectively return a simple
+string to identify the object and the Json representation of the object.
+
+=== Globals functions
+Previous members and methods are ''private'', it is not generally necessary to
+use them directly . For example, you can use the method `isinstance` :
+
+-----------------------------------------------------------------------------
+var a = [],
+    o = {},
+    f = function(){},
+    s = '';
+py.isinstance(a, Array) == true;
+py.isinstance(o, Object) == true;
+py.isinstance(f, Function) == true;
+py.isinstance(s, String) == true;
+-----------------------------------------------------------------------------
+
+The same idea apply to object who implement `__str__` (all do), you just need
+to invoke `str`:
+
+-----------------------------------------------------------------------------
+a = {foo: 'bar'}
+py.str(a) == '<Class Object ({"foo": "bar"})>'; //true
+-----------------------------------------------------------------------------
+
+Again, `repr` returns the results of  `__repr__`, the JSON representation JSON
+of the objet. You may note that not all object can be represented in Json, like
+functions or Errors, they are not in link:http://json.org[JSON specifications].
+
+Length of any ''measurable'' object can be obtained with `len` method.
+Measurable means ''Who implements `__len__` method'' :
+
+-----------------------------------------------------------------------------
+a = ['pif', 'paf', 'pouf'];
+o = {'pif': 1, 'paf': 2};
+s = 'foobar';
+py.len(a) == 3; //true
+py.len(o) == 2; //true
+py.len(s) == 6; //true
+-----------------------------------------------------------------------------
+
+At the end, usual method are defined :
+-----------------------------------------------------------------------------
+var a = null, b, c = 0, d = {};
+py.isNone(a) == true;
+py.isNone(b) == true;
+py.notNone(c) == true;
+py.notNone(d) == true;
+-----------------------------------------------------------------------------
+
+
+WARNING: ''Global'' functions are defined in the `py` namespace, but it is
+possible to acces them directly when set configuration variable `withGlobals`
+to `true`. Go to link:boostrap_config.html[Docs/BootstrapConfig] for more
+informations.
+
+=== Iterators
+At the same manner we have a ''measurable'' object, we can define ''iterable''
+objects. Here again, we choose python way:
+
+NOTE: An Object is iterable if it have a method `__iter__` returning an
+iterator. An Iterator is an object which have a `next` method.
+
+In PyJS, iterate through any object is really easy, you just have to call its
+method `iter`. The `Object` prototype have another methods like `itervalues`
+that permit as its name say to iterate through the object's values.
+All iterable objects have those methods:
+
+  * `all` : returns true if _all contained object_ validate given condition
+  * `any` : returns true if _at least one of_ contained object validate given
+	    condition
+  * `contains`: returns true if given object if contained
+
+Exemples:
+-----------------------------------------------------------------------------
+var o = {
+       foo: 'bar',
+       foz: 'baz'
+    },
+    a = [1,2,3,4,5,6],
+    s = 'my string';
+
+o.all(function(k) { return k === 'foo' }); // false
+a.all(function(i) { return i < 7; }); // true
+s.all(function(c) { return c !== 'z'; }); // true
+
+o.any(function(k) { return k === 'foo' }); // true
+a.any(function(i) { return i === 4; }); // true
+s.any(function(c) { return c === 'z'; }); // false
+
+o.contains('foo'); // true
+a.contains(4); // true
+s.contains('z'); // false
+-----------------------------------------------------------------------------
+
+All object have object have the method `isIn`, which act exactly like `contains`:
+-----------------------------------------------------------------------------
+'foo'.isIn(o) // true
+(4).isIn(a); // true //necessary
+'z'.isIn(s); // false
+-----------------------------------------------------------------------------
+
+
+== Standard JavaScript objects
+Most of objects methods have self-explanatory names. For this reason, we'll
+just speak about importants methods, or when there is something to say. The
+link at the beginning of each section rely to the API.
+
+=== The link:http://api.pyjs.info/symbols/Object.html[Object prototype]
+
+Objects are ''iterables'', like seen before, with the method `iter`. But this
+method iterate only on the object's keys. It is possible to do the same on the
+values with `itervalues`:
+-----------------------------------------------------------------------------
+var o = {
+    k1: 1,
+    k2: 2,
+    k3: 3
+};
+
+var r = 0;
+
+o.itervalues(function(v) {
+    r += v;
+});
+v === 6; // true
+-----------------------------------------------------------------------------
+
+Also, you can iterate on pairs:
+-----------------------------------------------------------------------------
+var o = { foo: 'bar' };
+var str;
+o.iteritems(function(k, v) { str = k + v; });
+str === 'foobar'; // true
+-----------------------------------------------------------------------------
+
+Like in Python, you can get Array of keys, values or pairs :
+-----------------------------------------------------------------------------
+var o = { foo: 'bar' };
+o.keys(); // === ['foo']
+o.values(); // === ['bar']
+o.items(); // === [['foo', 'bar']]
+-----------------------------------------------------------------------------
+
+=== The link:http://api.pyjs.info/symbols/Array.html[Array prototype]
+
+Previous methods works with arrays, but two other methods deserv to be
+described: methods  `filter` and `map`. This is an example:
+-----------------------------------------------------------------------------
+var a = [0,1,2,3,4,5,6,7,8,9];
+a.filter(function(i) { return i < 5; }); // === [0,1,2,3,4]
+a.map(function(i) { return i*2; }); // === [0,2,4,6,8,10,12,14,16,18]
+-----------------------------------------------------------------------------
+Those methods do not modify initial array `a`.
+
+=== The link:http://api.pyjs.info/symbols/String.html[String prototype]
+String objects are ''itérables'', You can iter on its caracters using method
+`iter`. As you might suppose, `contains` method (and its equivalent`isIn`)
+works:
+-----------------------------------------------------------------------------
+"foobar".contains('f') === true;
+'f'.isIn('foobar') === true;
+-----------------------------------------------------------------------------
+
+But, for you can test containment of a substring:
+-----------------------------------------------------------------------------
+"foobar".contains("foo") === true;
+"bar".isIn("foobar") === true;
+-----------------------------------------------------------------------------
+
+Others methods from Python are defined :
+-----------------------------------------------------------------------------
+"foobar".startswith('foo') === true;
+"foobar".endswith('bar') === true;
+-----------------------------------------------------------------------------
+
+=== The link:http://api.pyjs.info/symbols/Element.html[Element prototype]
+
+The object `Element` is a node a the document. But the are lots of
+differencies between browsers, and ''uniform'' methods really are needed. Most
+of librairies choose a non-obtrusive way, which means using global functions to
+style, to modify attributes or to connect to an event. PyJS give you some
+usefull methods directly on the node, with the cross-browser goal.
+Lets take a simple HTML code like this:
+-----------------------------------------------------------------------------
+<div id="box">
+    <h1 class="title"> My Heading </h1>
+    <p style="color: red"> My Paragraph </p>
+</div>
+-----------------------------------------------------------------------------
+
+  * The method `query` let you select elements with a CSS2 selector :
+-----------------------------------------------------------------------------
+var title = $('box').query('h1')[0];
+$('box').query('.title')[0]; // === title
+-----------------------------------------------------------------------------
+
+  * The method `attr`  let you access to an attribute and/or modify it :
+-----------------------------------------------------------------------------
+$('box').attr('id') === 'box';
+$('box').attr('id', 'newid');
+
+$('box').query('p')[0].attr('style', 'color: green');
+$('box').query('h1')[0].attr('class') === 'title'; // true
+-----------------------------------------------------------------------------
+
+  * Both methods `getStyle` et `getStyles` let you get style(s) of an element :
+
+-----------------------------------------------------------------------------
+$('box').query('p').getStyle('color') === 'red'; // true
+$('box').query('p').getStyles(['color']) === {color: 'red'}; // true
+-----------------------------------------------------------------------------
+
+  * Both methods `setStyle` et `setStyles` let you set style(s) of an element :
+
+-----------------------------------------------------------------------------
+$('box').setStyle('background-color', 'green');
+$('box').setStyles({'background-color': 'red', 'color': 'white'});
+-----------------------------------------------------------------------------
+
+Here, we have supposed that function `$` returns an element by `id`, which is
+the case if the starting variable `withGlobals` is `true` (default value). The
+are some globals functions that permit to obtain the same result :
+-----------------------------------------------------------------------------
+// query
+$$('h1.title')[0];           // == box first child
+// query with node reference
+$$('h1.title', $('box'))[0]; // == box first child
+$$('h1.title', 'box')[0];    // == box first child
+
+//attr
+$attr('box', 'id') === 'box'; // true
+$attr('box', 'style', 'color:red');
+
+// getStyle :
+$style('box', 'color') === 'red'; // true
+
+// getStyles :
+$style('box', [ 'color', 'background-color']);
+// === {color: 'red', 'background-color': 'transparent'}
+
+// setStyle :
+$style('box', 'color', 'green');
+
+// setStyles :
+$style('box', {'color': 'green'});
+-----------------------------------------------------------------------------
+
+WARNING: You must to make the difference between modify the ''attribute''
+`style` and ''styling'' a node. In the first case, we juste set the
+attribute with a string (for example `color: red;`), but in the other, we add
+(or modify) only one style, exactly like `$('box').style.color = 'red'`.
+
+
+=== link:http://api.pyjs.info/symbols/Function.html[Function prototype]
+
+The possibility showed here is the ''binding''. It permit to link a fonction to
+an objet, to let you use the `this` keyword in the function, which is the bound
+object:
+
+-----------------------------------------------------------------------------
+var a = {
+    'name': 'My name is A'
+};
+var b = {
+    'name': 'My name is B'
+}
+function showName() {
+    alert(this.name);
+}
+a.show = showName;
+a.show(); //  'My name is A'
+var show = showName.bind(b);
+show(); // 'My name is B'
+showName.bind(a)(); // My Name is A'
+-----------------------------------------------------------------------------
+
+

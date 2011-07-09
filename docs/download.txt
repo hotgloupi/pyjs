@@ -1,0 +1,17 @@
+
+== Download page
+
+=== Get the latest version
+
+The best way to get and update the last version is
+to fetch it from the repository
+
+  git clone fsdjfdsjkfsdjkfsd
+
+You may also want to get a nighlty release
+
+=== Get prepackaged version
+
+If you just need a working version to embed in your website,
+just download the link:http://download.pyjs.info/last.pyjs.xd.js[last version].
+
