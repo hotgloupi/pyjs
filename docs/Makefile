@@ -9,8 +9,9 @@ SRCS		= index.txt			\
 
 
 HTML		= $(SRCS:.txt=.html)
+INSTALLED	= $(addprefix $(INSTALLDIR)/,$(HTML))
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re install install-files
 
 all: $(HTML)
 
@@ -22,6 +23,16 @@ all: $(HTML)
 
 clean:
 	rm -f $(HTML)
+
+install-files: $(INSTALLED)
+	cp -r --parents $(HTML) $(INSTALLDIR)
+
+
+$(INSTALLED): $(HTML)
+	@echo "installing $@ into $(INSTALLDIR)"
+	@mkdir -p `dirname $@`
+
+install: install-files
 
 fclean: clean
 
