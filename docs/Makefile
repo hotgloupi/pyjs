@@ -1,3 +1,6 @@
+
+DESTDIR		?= /usr/local/share/doc/pyjs
+
 SRCS		= index.txt			\
 		  getting_started.txt		\
 		  download.txt			\
@@ -6,7 +9,6 @@ SRCS		= index.txt			\
 		  docs/core.txt			\
 		  docs/bootstrap_config.txt	\
 		  modules.txt			\
-
 
 HTML		= $(SRCS:.txt=.html)
 INSTALLED	= $(addprefix $(DESTDIR)/,$(HTML))
@@ -24,7 +26,7 @@ all: $(HTML)
 clean:
 	rm -f $(HTML)
 
-install-files: $(INSTALLED)
+install-files: $(INSTALLED) reference
 	cp -r --parents $(HTML) $(DESTDIR)
 	cp -r reference $(DESTDIR)
 
@@ -35,14 +37,14 @@ $(INSTALLED): $(HTML)
 
 reference:
 	java \
-		-jar jsdoc-toolkit/jsrun.jar \
-		jsdoc-toolkit/app/run.js \
-		-t=jsdoc-toolkit/templates/jsdoc \
+		-jar ../jsdoc-toolkit/jsrun.jar \
+		../jsdoc-toolkit/app/run.js \
+		-t=../jsdoc-toolkit/templates/jsdoc \
 		-d=reference \
 		../pyjs \
 		-e=utf8 -r -p\
 
-install: install-files reference
+install: install-files
 
 fclean: clean
 
