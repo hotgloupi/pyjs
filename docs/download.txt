@@ -1,17 +1,21 @@
 
 == Download page
 
-=== Get the latest version
+=== Get the latest development version
 
 The best way to get and update the last version is
 to fetch it from the repository
 
-  git clone fsdjfdsjkfsdjkfsd
+  git clone git://github.com/hotgloupi/pyjs.git
 
-You may also want to get a nighlty release
+The only thing to do in order to update the whole
+repository is:
+
+  git pull
 
 === Get prepackaged version
 
 If you just need a working version to embed in your website,
-just download the link:http://download.pyjs.info/last.pyjs.xd.js[last version].
+just download the link:http://hotgloupi.fr/xd.py.js[last version].
 
+Or you can pack it yourself link:sandbox[here]
