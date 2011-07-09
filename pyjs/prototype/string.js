@@ -98,9 +98,9 @@ String.prototype.__len__ = function() {
         //      a = 'pif';
         //      a.foo = 'bar';
         //      a.foo === 'bar'; //false
-        this._index = 0;
-        this._len = this.__len__();
-        return this;
+        //this._index = 0;
+        //this._len = this.__len__();
+        //return this;
     };
 
 })();
@@ -149,7 +149,7 @@ if (!String.prototype.trim) {
  * @see <a href="http://blog.stevenlevithan.com/archives/faster-trim-javascript"> Faster Javascript Trim</a>
  */
 String.prototype.strip =  function strip(chars) {
-    if (isNone(chars)) {
+    if (py.isNone(chars)) {
         return this.trim();
     }
     var re_begin = new RegExp('^['+chars+']+'),

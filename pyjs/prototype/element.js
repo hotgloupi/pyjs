@@ -243,7 +243,7 @@ Element.prototype.connect = function connect(str, scope, func) {
             throw "Cannot attach event !";
         }/*debug>*/
     }
-    var hdlr = new py.event.Handler(str, self, func)
+    var hdlr = new py.event.Handler(str, self, func);
     this._hdlrs[str].append(hdlr);
     return (hdlr);
 };

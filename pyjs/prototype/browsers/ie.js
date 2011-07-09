@@ -17,7 +17,7 @@ py.addOnLoad(function() {
     head.appendChild(css_node);
 
     // We search now the stylesheet we just create
-    var style_sheet, sheets = py.doc.styleSheets, i;
+    var style_sheet, sheets = py.doc.styleSheets, i, l;
     for (i = 0, l = sheets.length; i < l; i++) {
         if (sheets[i].title === "ie_fix") {
             style_sheet = sheets[i];
