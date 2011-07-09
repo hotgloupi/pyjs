@@ -33,7 +33,7 @@ py.update({
             }
             //<debug
             if (!py.isinstance(ref[part], Object)) {
-                throw TypeError("The part "+part+" in the namespace "+name+
+                throw new TypeError("The part "+part+" in the namespace "+name+
                                 " is not an object.");
             }
             //debug>

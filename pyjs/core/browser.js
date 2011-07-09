@@ -265,7 +265,7 @@ var styles_maps = {
         'base': {
             'opacity': function(n, k, v) {
                 if (py.notNone(v)) {
-                    n.style.filter = 'alpha(opacity=' + v * 100 + ')';
+                    n.style.filter = 'alpha(opacity=' + (v * 100) + ')';
                 } else {
                     return n.filters[0] / 100.0;
                 }
@@ -275,8 +275,8 @@ var styles_maps = {
         8: {
             'opacity': function(k, v) {
                 if (py.notNone(v)) {
-                    this.style['-ms-filter'] = 'progid:DXImageTransform.Microsoft.Alpha(Opacity=' + v * 100 + ')';
-                    this.style.filter = 'progid:DXImageTransform.Microsoft.Alpha(Opacity=' + v * 100 + ')';
+                    this.style['-ms-filter'] = 'progid:DXImageTransform.Microsoft.Alpha(Opacity=' + (v * 100).toString() + ')';
+                    this.style.filter = 'progid:DXImageTransform.Microsoft.Alpha(Opacity=' + (v * 100).toString() + ')';
                 } else {
                     var f = this.style.filter;
                     if (!f) {

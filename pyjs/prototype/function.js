@@ -21,7 +21,7 @@ Function.prototype.__class__ = Function;
     Function.prototype.bind = function bind(scope, args) {
         //<debug
         if (py.notNone(args) && !py.isinstance(args, Array)) {
-            throw TypeError("args must be an Array");
+            throw new TypeError("args must be an Array");
         }
         //debug>
         var method = this;

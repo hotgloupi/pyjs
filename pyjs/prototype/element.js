@@ -67,7 +67,7 @@ Element.prototype.__getitem__ = function(k) {
         getter = function(k) {
             //<debug
             if (py.isNone(k) || !py.isinstance(k, String)) {
-                throw TypeError('Node attribute must be a string');
+                throw new TypeError('Node attribute must be a string');
             }
             //debug>
             k = attr_map[k] || k;
@@ -93,7 +93,7 @@ Element.prototype.__setitem__ = function(k, v) {
         setter = function(k, v) {
             //<debug
             if (py.isNone(k) || !py.isinstance(k, String)) {
-                throw TypeError('Node attribute must be a string');
+                throw new TypeError('Node attribute must be a string');
             }
             //debug>
             k = attr_map[k.toLowerCase()] || k;
@@ -240,7 +240,7 @@ Element.prototype.connect = function connect(str, scope, func) {
         } else if (this.attachEvent) {
             this.attachEvent('on' + str, this._fire_hdlrs[str]);
         }/*<debug*/ else {
-            throw "Cannot attach event !";
+            throw new Error("Cannot attach event !");
         }/*debug>*/
     }
     var hdlr = new py.event.Handler(str, self, func);
@@ -254,7 +254,7 @@ Element.prototype.disconnect = function disconnect(hdlr) {
         throw new TypeError("Handler must be the result of a previous connect");
     }
     if (py.isNone(this._hdlrs) || py.isNone(this._hdlrs[hdlr._event_name])) {
-        throw "Internal Error: Handler refer to an empty connector";
+        throw new Error("Internal Error: Handler refer to an empty connector");
     }
     //debug>
     var idx = -1,
@@ -280,7 +280,7 @@ Element.prototype.disconnect = function disconnect(hdlr) {
         } else if (this.detachEvent) {
             this.detachEvent('on' + str, this._fire_hdlrs[str]);
         } /*<debug*/ else {
-            throw "Cannot detach event !";
+            throw new Error("Cannot detach event !");
         } /*debug>*/
         delete this._fire_hdlrs[str];
     }
@@ -294,7 +294,7 @@ Element.prototype.disconnect = function disconnect(hdlr) {
 Element.prototype.setStyles = function setStyles(styles) {
     /*<debug*/
     if (py.isNone(styles) || !py.isinstance(styles, Object)) {
-        throw TypeError("styles must be an Object");
+        throw new TypeError("styles must be an Object");
     }
     /*debug>*/
 
@@ -311,7 +311,7 @@ Element.prototype.setStyles = function setStyles(styles) {
 Element.prototype.getStyles = function getStyles(styles) {
     /*<debug*/
     if (py.isNone(styles) || !py.isinstance(styles, Array)) {
-        throw TypeError("styles must be an Array");
+        throw new TypeError("styles must be an Array");
     }
     /*debug>*/
     var res = {};
@@ -344,10 +344,10 @@ Element.prototype.getStyles = function getStyles(styles) {
             setter = function(k, v) {
                 //<debug
                 if (py.isNone(k) || !py.isinstance(k, String)) {
-                    throw TypeError('Node Style must be a string');
+                    throw new TypeError('Node Style must be a string');
                 }
                 if (py.isNone(v) || !py.isinstance(v, String, Number)) {
-                    throw TypeError('Style property must be a String or a Number');
+                    throw new TypeError('Style property must be a String or a Number');
                 }
                 raiseCamelCase(k);
                 //debug>

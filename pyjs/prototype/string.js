@@ -201,7 +201,7 @@ String.prototype.rstrip = function rstrip(chars) {
 String.prototype.startswith = function startswith(str) {
     /*<debug*/
     if (py.isNone(str) || !py.isinstance(str, String)) {
-        throw TypeError('str must be a string');
+        throw new TypeError('str must be a string');
     }
     /*debug>*/
     var len = str.length;
@@ -222,7 +222,7 @@ String.prototype.startswith = function startswith(str) {
 String.prototype.endswith = function endswith(str) {
     /*<debug*/
     if (py.isNone(str) || !py.isinstance(str, String)) {
-        throw TypeError('str must be a string');
+        throw new TypeError('str must be a string');
     }
     /*debug>*/
     var len = str.length,
@@ -256,7 +256,7 @@ String.prototype.regEscape = function() {
 String.prototype.contains = function contains(s) {
     //<debug
     if (py.isNone(s) || !py.isinstance(s, String)) {
-        throw TypeError('Argument s must be a String');
+        throw new TypeError('Argument s must be a String');
     }
     //debug>
 

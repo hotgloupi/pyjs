@@ -89,7 +89,7 @@ var methods = {
      */
     raiseNone: function raiseNone(o) {
         if (py.isNone(o)) {
-            throw TypeError("Object is Undefined Or Null");
+            throw new TypeError("Object is Undefined Or Null");
         }
     },
 

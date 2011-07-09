@@ -9,7 +9,8 @@
          navigator: false, Option: false, parent: false, screen: false, setInterval: false,
          setTimeout: false, window: false, XMLHttpRequest: false, ActiveXObject: false,
          console: true, log: true, warn: true, pyConfig: true,
-         KeyError: true, ValueError: true, TypeError, StopIteration: true, Element: true
+         KeyError: true, ValueError: true, TypeError: true, PyError: true,
+         StopIteration: true, Element: true
 */
 
 if (typeof console != "undefined") {

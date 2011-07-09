@@ -180,7 +180,7 @@ Object.prototype.itervalues = function itervalues(f, scope) {
     }
     //<debug
     if (!py.isinstance(f, Function)) {
-        throw Error('itervalues argument must be function !');
+        throw new Error('itervalues argument must be function !');
     }
     //debug>
     this.iter(function(k, idx) {
@@ -328,7 +328,7 @@ Object.prototype.all = function all(fn, scope) {
 Object.prototype.update = function update(/*Object*/ obj) {
     //<debug
     if (!py.isinstance(obj, Object)) {
-        throw TypeError('obj must be an Object');
+        throw new TypeError('obj must be an Object');
     }
     //debug>
     obj.iteritems(function(k, v) {
