@@ -90,7 +90,7 @@ py.notNone(d) == true;
 
 WARNING: ''Global'' functions are defined in the `py` namespace, but it is
 possible to acces them directly when set configuration variable `withGlobals`
-to `true`. Go to link:boostrap_config.html[Docs/BootstrapConfig] for more
+to `true`. Go to link:bootstrap_config.html[Docs/BootstrapConfig] for more
 informations.
 
 === Iterators
