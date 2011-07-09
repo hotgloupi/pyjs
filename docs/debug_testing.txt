@@ -1,0 +1,122 @@
+== Some tests in development version ==
+
+Many times, it is hard to choose between performances and maintainability of
+the source code. When a function might be call lots of times, we do not test
+parameter and other thing, and let the developer take care about. But, as you
+suppose, optimized code is really harder to debug without testing validity of
+data at each step. My view is, earlier the error is cought, better it is :)
+
+
+Lets take a simple example, you want to search an `input` named `form.item_id`.
+You are sure you have it and you write :
+
+-----------------------------------------------------------------------------
+var input = document.getElementsByName('form.item_id')[0];
+-----------------------------------------------------------------------------
+
+This works only if there is not conflict about names. Lets imagine it is the
+case, and you decide to write a function which will returns found elements,
+but let you specify any container where to search in, for example a `div` with
+the `id` `box`.
+This is what we get:
+
+-----------------------------------------------------------------------------
+function $byName(/*String*/ name, /*String?|Element?*/ ref) {
+    var elements = document.getElementsByName(name);
+    if (!ref) { // No container
+        return elements;
+    } else {
+        if (py.isinstance(ref, String)) { // ref is an id
+             ref = document.getElementById(ref);
+        }
+        return elements.filter(function(el){ return el.isIn(ref); });
+    }
+}
+-----------------------------------------------------------------------------
+
+Here, we suppose that following conditions are met:
+
+ * `name` is given
+ * `name` is a string
+ * ref is None
+ * or if `ref` is an `id`, then it exists
+ * else `ref` is an `Element`
+
+If one of this condition is wrong, the function may throw an Error. But we
+could turn around the `id` problem with something like this :
+
+-----------------------------------------------------------------------------
+function $byName(/*String*/ name, /*String?|Element?*/ ref) {
+    var elements = document.getElementsByName(name);
+    if (ref && py.isinstance(ref, String)) { // ref is an id
+         ref = document.getElementById(ref);
+    }
+    if (!ref) { // no container found or given
+        // suite du traitement
+-----------------------------------------------------------------------------
+
+But in the version, general behaviour is wrong: if the user give an +id+, he
+expects we use it, or raise any error to say: '' Your id is wrong !! ''. It could
+be more effective to keep our first version but to perform more tests:
+
+-----------------------------------------------------------------------------
+function $byName(/*String*/ name, /*String?|Element?*/ ref) {
+    if (py.isNone(name) || !py.isinstance(name, String)) {
+        throw Error("name must be a String");
+    }
+    var elements = document.getElementsByName(name);
+    if (!ref) { // pas de conteneur spécifié
+        return elements;
+    } else {
+        if (py.isinstance(ref, String)) { // ref est un id
+             ref = document.getElementById(ref);
+             if (py.isNone(ref)) {
+                 throw Error("No element found with id = " + ref);
+             }
+        } else if (!py.isinstance(ref, Element)) {
+            throw TypeError("ref must be a String or an Element, found "+ ref.__class__);
+        }
+        return elements.filter(function(el) { return el.isIn(ref); });
+    }
+}
+-----------------------------------------------------------------------------
+
+As you see, function is more robust, but slower, and in many case, all of these
+tests are unusual. When your software is stable, and you want to package your
+sources, it is not possible (or really boring) to remove parts of code like
+testing parameters validity. The module called `py.core.packer` have an option
+that permit to remove parts of code, with the counterpart using special syntax:
+
+-----------------------------------------------------------------------------
+function $byName(/*String*/ name, /*String?|Element?*/ ref) {
+    //<debug
+    if (py.isNone(name) || !py.isinstance(name, String)) {
+        throw Error("name must be a String");
+    }
+    //debug>
+    var elements = document.getElementsByName(name);
+    if (!ref) { // No container
+        return elements;
+    } else {
+        if (py.isinstance(ref, String)) { // Container is an ID
+             ref = document.getElementById(ref);
+             //<debug
+             if (py.isNone(ref)) {
+                 throw Error("No element found with id = " + ref);
+             }
+             //debug>
+        }/*<debug*/ else if (!py.isinstance(ref, Element)) {
+            throw TypeError("ref must be a String or an Element, found "+ ref.__class__);
+        }/*debug>*/
+        return elements.filter(function(el){ return el.isIn(ref); });
+    }
+}
+-----------------------------------------------------------------------------
+
+You anderstood general syntax: all of code within `//<debug` and `//debug>`,
+or between `/*<debug*/` et `/*debug>*/`, will removed. In fact, the word
+`debug` is a 'flag', the default flag of the 'packer'. You can use your
+own flag, and you just need to give it to the
+link:reference/symbols/py.packer.html[packer].
+
+

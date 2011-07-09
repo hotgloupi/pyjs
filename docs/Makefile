@@ -3,6 +3,7 @@ DESTDIR		?= /usr/local/share/doc/pyjs
 
 SRCS		= index.txt			\
 		  getting_started.txt		\
+		  debug_testing.txt		\
 		  download.txt			\
 		  docs.txt			\
 		  docs/prototype.txt		\
