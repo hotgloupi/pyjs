@@ -34,5 +34,5 @@ Some documentations available for now, but are growing :
  * The link:download.html[Download page]
  * link:docs.html[PyJS Documentation]
  * link:modules.html[Modules documentation]
- * link:http://reference.pyjs.info[Reference documentation of PyJS]
+ * link:reference/[Reference documentation of PyJS]
  * Run PyJS link:http://tests.pyjs.info[Tests] !
