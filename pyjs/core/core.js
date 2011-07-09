@@ -52,28 +52,32 @@ var py = null;
                     }
                 },
                 u = navigator.userAgent,
-                e = /*@cc_on!@*/false;
-            if (/webkit/i.test(u)) {
-                setTimeout(function() {
+                explorerTrick = function () {
+                    var t = document.createElement('doc:rdy');
+                    try {
+                        t.doScroll('left');
+                        i();
+                        t = null;
+                    } catch (err) {
+                        setTimeout(explorerTrick, 1);
+                    }
+                },
+                webkitTrick = function() {
                     var dr = document.readyState;
                     if (dr == "loaded" || dr == "complete") {
                         i();
                     } else {
-                        setTimeout(arguments.callee, 10);
+                        setTimeout(webkitTrick, 10);
                     }
-                }, 10);
+                },
+                e = /*@cc_on!@*/false;
+            if (/webkit/i.test(u)) {
+                setTimeout(webkitTrick, 10);
             }
             else if ((/mozilla/i.test(u) && !/(compati)/.test(u)) || (/opera/i.test(u))) {
                 document.addEventListener("DOMContentLoaded", i, false);
             } else if (e) {
-                var t = document.createElement('doc:rdy');
-                try {
-                    t.doScroll('left');
-                    i();
-                    t = null;
-                } catch (e) {
-                    setTimeout(arguments.callee, 0);
-                }
+                explorerTrick();
             } else {
                 window.onload = i;
             }
