@@ -18,7 +18,7 @@ py.importModule('py.packer.packer');
 
 You may notive we do not specify the extension `.js` of the file. In fact, all
 imported modules will be search from their first name part, here `py`. The
-''namespace'' is automatically saved by PyJS when its starting, but it is
+'namespace' is automatically saved by PyJS when its starting, but it is
 totaly possible to register your own:
 -----------------------------------------------------------------------------
 py.registerModulePath('mylib', '/static/resources/JS/MyLib');
@@ -28,7 +28,7 @@ py.importModule('mylib.foo.bar'); // will load /static/resources/JS/MyLib/foo/ba
 === The namespaces
 
 To avoid conflicts between modules, you may put all of your code in
-''namespaces''. PyJS library, except some globals, use `py` to prefix all its
+'namespaces'. PyJS library, except some globals, use `py` to prefix all its
 component. A great tools may be used to create or extend namespaces, it's the
 function `extendNamespace`:
 -----------------------------------------------------------------------------
@@ -42,8 +42,8 @@ py.extendNamespace('mylib.foo.bar', {
 });
 -----------------------------------------------------------------------------
 
-This function don't do anything that's really awesome, it create a hierarchical
-list of objets, which we could do by hand:
+This function doesn't do anything really awesome, it creates a hierarchical
+list of objets, which could have been done by hand:
 -----------------------------------------------------------------------------
 if (typeof mylib == "undefined) {
     mylib = {};
@@ -97,7 +97,7 @@ which take arguments given when creating the class.
 
 ==== The inheritence
 
-Obviously, classes are usefull when you can ''derive'' them. Fortunately, it's
+Obviously, classes are usefull if you can 'derive' them. Fortunately, it's
 possible:
 
 -----------------------------------------------------------------------------
@@ -199,5 +199,5 @@ The property  `name`, `version` et `OS` are respectively the browser name, it's
 version and the operating system used. Those values are obtained from the
 script of link:http://www.quirksmode.org/js/detect.html[Peter-Paul Koch]. Other
 methods are self-explanatory and described in the
-link:http://reference.pyjs.info[reference documentation].
+link:../reference/index.html[reference documentation].
 

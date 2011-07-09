@@ -24,7 +24,7 @@ You can use the library in next `script` tag :D
 You can right now use all of PyJS library within the namespace `py`.
 We will introduce you some basic tutorials to get into it as fast as
 possible. You might want to keep open the
-link:http://reference.pyjs.info[reference manual] and full
+link:reference/index.html[reference manual] and full
 link:docs.html[documentation] when things need more explanation.
 
 ==== First overview

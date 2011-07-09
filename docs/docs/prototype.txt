@@ -33,14 +33,14 @@ A set of method are added to objects and make them really easy to use
 
 Of course, in order to make things easy, JavaScript is modified, particularly
 base objects. The JavaScript way to do this to modifying prototype, and first
-modification I'll speak about is the property called `class`. This simple
+modification I'll speak about is the property called `__class__`. This simple
 string give us the ability to identify any object, and make easy to know if we
 have for example an Object, or a Function. Two other important methods (but
 optionals) are `__str__` et `__repr__` which respectively return a simple
 string to identify the object and the Json representation of the object.
 
 === Globals functions
-Previous members and methods are ''private'', it is not generally necessary to
+Previous members and methods are 'private', it is not generally necessary to
 use them directly . For example, you can use the method `isinstance` :
 
 -----------------------------------------------------------------------------
@@ -66,8 +66,8 @@ Again, `repr` returns the results of  `__repr__`, the JSON representation JSON
 of the objet. You may note that not all object can be represented in Json, like
 functions or Errors, they are not in link:http://json.org[JSON specifications].
 
-Length of any ''measurable'' object can be obtained with `len` method.
-Measurable means ''Who implements `__len__` method'' :
+Length of any 'measurable' object can be obtained with `len` function, where
+measurable means 'Who implements `__len__` method' :
 
 -----------------------------------------------------------------------------
 a = ['pif', 'paf', 'pouf'];
@@ -88,13 +88,13 @@ py.notNone(d) == true;
 -----------------------------------------------------------------------------
 
 
-WARNING: ''Global'' functions are defined in the `py` namespace, but it is
+WARNING: 'Global' functions are defined in the `py` namespace, but it is
 possible to acces them directly when set configuration variable `withGlobals`
 to `true`. Go to link:bootstrap_config.html[Docs/BootstrapConfig] for more
 informations.
 
 === Iterators
-At the same manner we have a ''measurable'' object, we can define ''iterable''
+At the same manner we have a 'measurable' object, we can define 'iterable'
 objects. Here again, we choose python way:
 
 NOTE: An Object is iterable if it have a method `__iter__` returning an
@@ -145,7 +145,9 @@ Most of objects methods have self-explanatory names. For this reason, we'll
 just speak about importants methods, or when there is something to say. The
 link at the beginning of each section rely to the API.
 
-=== The link:http://api.pyjs.info/symbols/Object.html[Object prototype]
+=== The `Object` prototype
+
+link:../reference/symbols/Object.html[see reference]
 
 Objects are ''iterables'', like seen before, with the method `iter`. But this
 method iterate only on the object's keys. It is possible to do the same on the
@@ -181,7 +183,9 @@ o.values(); // === ['bar']
 o.items(); // === [['foo', 'bar']]
 -----------------------------------------------------------------------------
 
-=== The link:http://api.pyjs.info/symbols/Array.html[Array prototype]
+=== The `Array` prototype
+
+link:../reference/symbols/Array.html[see reference]
 
 Previous methods works with arrays, but two other methods deserv to be
 described: methods  `filter` and `map`. This is an example:
@@ -192,9 +196,12 @@ a.map(function(i) { return i*2; }); // === [0,2,4,6,8,10,12,14,16,18]
 -----------------------------------------------------------------------------
 Those methods do not modify initial array `a`.
 
-=== The link:http://api.pyjs.info/symbols/String.html[String prototype]
-String objects are ''itérables'', You can iter on its caracters using method
-`iter`. As you might suppose, `contains` method (and its equivalent`isIn`)
+=== The `String` prototype
+
+link:../reference/symbols/String.html[see reference]
+
+String objects are 'iterable', You can iter on its caracters using method
+`iter`. As you might suppose, `contains` method (and its counterpart `isIn`)
 works:
 -----------------------------------------------------------------------------
 "foobar".contains('f') === true;
@@ -213,13 +220,15 @@ Others methods from Python are defined :
 "foobar".endswith('bar') === true;
 -----------------------------------------------------------------------------
 
-=== The link:http://api.pyjs.info/symbols/Element.html[Element prototype]
+=== The `Element` prototype
 
-The object `Element` is a node a the document. But the are lots of
-differencies between browsers, and ''uniform'' methods really are needed. Most
+link:../reference/symbols/Element.html[see reference]
+
+An instance of `Element` is a node of the document. But there are lots of
+differencies between browsers, and 'uniform' methods really are needed. Most
 of librairies choose a non-obtrusive way, which means using global functions to
 style, to modify attributes or to connect to an event. PyJS give you some
-usefull methods directly on the node, with the cross-browser goal.
+usefull methods directly on the node, cross-browser minded.
 Lets take a simple HTML code like this:
 -----------------------------------------------------------------------------
 <div id="box">
@@ -236,11 +245,13 @@ $('box').query('.title')[0]; // === title
 
   * The method `attr`  let you access to an attribute and/or modify it :
 -----------------------------------------------------------------------------
-$('box').attr('id') === 'box';
-$('box').attr('id', 'newid');
+var box = $('box');
+assert(box.attr('id') === 'box');
+box.attr('id', 'newid');
+assert(box.attr('id') === 'newid');
 
-$('box').query('p')[0].attr('style', 'color: green');
-$('box').query('h1')[0].attr('class') === 'title'; // true
+box.query('p')[0].attr('style', 'color: green');
+box.query('h1')[0].attr('class') === 'title'; // true
 -----------------------------------------------------------------------------
 
   * Both methods `getStyle` et `getStyles` let you get style(s) of an element :
@@ -267,9 +278,11 @@ $$('h1.title')[0];           // == box first child
 $$('h1.title', $('box'))[0]; // == box first child
 $$('h1.title', 'box')[0];    // == box first child
 
+var box = $('box');
+
 //attr
-$attr('box', 'id') === 'box'; // true
-$attr('box', 'style', 'color:red');
+assert($attr(box, 'id') === 'box')
+$attr(box, 'style', 'color:red');
 
 // getStyle :
 $style('box', 'color') === 'red'; // true
@@ -285,15 +298,17 @@ $style('box', 'color', 'green');
 $style('box', {'color': 'green'});
 -----------------------------------------------------------------------------
 
-WARNING: You must to make the difference between modify the ''attribute''
-`style` and ''styling'' a node. In the first case, we juste set the
-attribute with a string (for example `color: red;`), but in the other, we add
+WARNING: You must to make the difference between modify the 'attribute'
+`style` and 'styling' a node. In the first case, we juste set the
+attribute with a string (for example `"color: red;"`), but in the other, we add
 (or modify) only one style, exactly like `$('box').style.color = 'red'`.
 
 
-=== link:http://api.pyjs.info/symbols/Function.html[Function prototype]
+=== The `Function` prototype
 
-The possibility showed here is the ''binding''. It permit to link a fonction to
+link:../reference/symbols/Function.html[see reference]
+
+The possibility showed here is the 'binding'. It permit to link a fonction to
 an objet, to let you use the `this` keyword in the function, which is the bound
 object:
 
