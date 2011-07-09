@@ -258,7 +258,7 @@ Element.prototype.disconnect = function disconnect(hdlr) {
     }
     //debug>
     var idx = -1,
-        str = hdlr._event_name;
+        str = hdlr._event_name,
         hdlrs = this._hdlrs[str];
     hdlrs.iter(function (h, i) {
         if (h._id === hdlr._id) {
