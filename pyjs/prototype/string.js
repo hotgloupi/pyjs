@@ -60,6 +60,22 @@ String.prototype.join = function(a) {
 };
 
 /**
+ * Return lower cased string
+ * @returns {String}
+ */
+String.prototype.lower = function () {
+    return this.toLowerCase();
+};
+
+/**
+ * Return upper cased string
+ * @returns {String}
+ */
+String.prototype.upper = function () {
+    return this.toUpperCase();
+};
+
+/**
  * Returns the number of contained objects
  * @private
  * @returns {Number}
