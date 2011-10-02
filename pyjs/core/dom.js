@@ -79,7 +79,7 @@ py.extendNamespace('py.dom', {
         py.raiseNone(_attr);
         //debug>
 
-        var node = py.isinstance(el, String) ? document.getElementById(el) : el;
+        var node = py.isinstance(el, String) ? py.dom.byId(el) : el;
         //<debug
         if (py.isinstance(el, String) && py.isNone(node)) {
             throw new ValueError('The ID '+el+' is not found');

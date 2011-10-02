@@ -170,7 +170,9 @@ py.extendNamespace('py.defer', {
             params.headers = [];
         }
         params.headers.append(["Content-Type", "application/x-www-form-urlencoded"]);
-        params.headers.append(["Content-Length", py.len(params.content)]);
+        try {
+            params.headers.append(["Content-Length", py.len(params.content)]);
+        } catch (err) {}
         delete params["query"];
         return (this._xhrMethod(params, 'POST'));
     }

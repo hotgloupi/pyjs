@@ -157,10 +157,37 @@ Element.prototype.query = function query(selectors) {
 };
 
 
-//TODO: Something better, return an object that can make easy disconnect
+/**
+ * Fire an arbitrary event
+ * @param {String} name The event name, NOT starting with 'on'
+ * @param {Object} [properties] Properties of the event
+ */
+Element.prototype.fire = function fire(name, properties) {
+    var evt;
+    if (document.createEvent) {
+        evt = document.createEvent("HTMLEvents");
+        evt.initEvent(name, true, true);
+    } else {
+        evt = document.createEventObject();
+        evt.eventType = "on" + name;
+    }
+    evt.eventName = name;
+    if (properties) {
+        properties.iteritems(function (k, v) {
+            evt[k] = v;
+        });
+    }
+
+    if (document.createEvent) {
+        this.dispatchEvent(evt);
+    } else {
+        this.fireEvent(evt.eventType, evt);
+    }
+};
+
 /**
  * connect a function to an element's event
- * @param {String} event_name The event name, starting with 'on'
+ * @param {String} event_name The event name, NOT starting with 'on'
  * @param {Object|Function} scope Scope object or function to execute
  * @param {Function|String} [func] the function to execute
  * @returns {py.event.Handler} Handler, needed to disconnect

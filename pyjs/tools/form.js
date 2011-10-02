@@ -14,7 +14,7 @@ py.extendNamespace('py.tools.form', {
                 if (e.checked) {
                     res[e.name] = 'checked';
                 }
-            } else {
+            } else if (e.type !== 'submit') {
                 res[e.name] = e.value;
             }
         }
