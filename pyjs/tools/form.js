@@ -10,6 +10,7 @@ py.extendNamespace('py.tools.form', {
         var i, l, res = {};
         for (i = 0, l = form.elements.length; i < l; i++) {
             var e = form.elements[i];
+            if (py.isNone(e.name) || !py.len(e.name)) { continue; }
             if (e.type.lower() === 'checkbox') {
                 if (e.checked) {
                     res[e.name] = 'checked';
