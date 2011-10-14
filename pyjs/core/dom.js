@@ -26,7 +26,7 @@ py.extendNamespace('py.dom', {
     /**
      * Create an Element
      * @param {String} tag Tag name
-     * @param {Object} [obj] attributes of the node
+     * @param {Object|String} [obj] attributes of the node, or a string for content of the node
      * @returns {Element} created element
      */
     create: function create(tag, attrs) {
@@ -38,6 +38,9 @@ py.extendNamespace('py.dom', {
         /*debug>*/
         var el = document.createElement(tag);
         if (attrs) {
+            if (!py.isinstance(attrs, String)) {
+                attrs = {content: attrs};
+            }
             //<debug
             if (!py.isinstance(attrs, Object)) {
                 throw TypeError("attributes must be given in an Object");
