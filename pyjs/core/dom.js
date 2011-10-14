@@ -38,7 +38,7 @@ py.extendNamespace('py.dom', {
         /*debug>*/
         var el = document.createElement(tag);
         if (attrs) {
-            if (!py.isinstance(attrs, String)) {
+            if (py.isinstance(attrs, String)) {
                 attrs = {content: attrs};
             }
             //<debug
