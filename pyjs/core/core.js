@@ -41,9 +41,7 @@ if (typeof console != "undefined") {
     log = warn = function() {};
 }
 
-var py = null;
-
-(function(){
+py = window.py = (function(){
     var dom_loaded = false,
         listenOnLoad = function () { // http://www.kryogenix.org/days/2007/09/26/shortloaded
             var i = function() {
@@ -89,7 +87,7 @@ var py = null;
      * Global PyJS namespace
      * @namespace
      */
-    py = {
+    var py = {
 
         config: {
             extremist: false,
@@ -191,7 +189,10 @@ var py = null;
                 throw new ValueError('path must be a non empty String');
             }
             if (prefix.isIn(this._modules_path)) {
-                throw new Error("The prefix "+ prefix +" was already registered");
+                if (this._modules_path[prefix] !== path.rstrip('/') + '/') {
+                    throw new Error("The prefix "+ prefix +" was already registered as " + this._modules_path[prefix]);
+                }
+                return;
             }
             /*debug>*/
             path = path.rstrip('/') + '/';
@@ -272,7 +273,7 @@ var py = null;
             log('import module: ', name);
             var src = this.loadJs(py.getModuleUrl(name));
             try {
-                this.globalEval(src);
+                this.globalEval("(function(){"+src+"})()");
             } catch (err) {
                 throw "Error while loading module " + name + ' : ' + err;
             }
@@ -436,6 +437,8 @@ var py = null;
     if (!__init_pyjs__()) {
         __init_pyjs_interval__ = setInterval(__init_pyjs__, 10);
     }
+    return py;
+
 })();
 
 py.importModule('py.prototype.__init__');

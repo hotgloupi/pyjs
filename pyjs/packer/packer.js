@@ -91,15 +91,18 @@ py.extendNamespace('py.packer', {
         src = this._applyParams(src);
 
         var matches = src.match(this.RE_IMPORT);
-        if (py.isNone(matches) || py.len(matches) === 0) {
-            return src;
+        if (!(py.isNone(matches) || py.len(matches) === 0)) {
+            matches.iter(function(import_cmd) {
+                var module = import_cmd.replace(this.RE_MODULE, '$1'),
+                    sub_src = this._packModule(module);
+                src = src.replace(import_cmd, sub_src.replace(/\$/g, '$$$$')); //escape $ with two $$
+            }, this);
         }
-        matches.iter(function(import_cmd) {
-            var module = import_cmd.replace(this.RE_MODULE, '$1'),
-                sub_src = this._packModule(module);
-            src = src.replace(import_cmd, sub_src.replace(/\$/g, '$$$$')); //escape $ with two $$
-        }, this);
-        return src;
+        return (
+            '\n\n///////////////////// LOADING MODULE "' + name + '"\n' +
+            'py._loaded_modules.push("' + name + '");\n\n' +
+            src
+        );
     },
 
     _render: function(data) {
