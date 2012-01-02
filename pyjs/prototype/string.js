@@ -51,12 +51,19 @@ String.prototype.equals = function(s) {
 
 /**
  * Join a array
- * @param {Array} a Array to join
+ * @param {Iterable} an Iterable to join
  * @returns {String}
  */
 String.prototype.join = function(a) {
     /*<debug*/py.raiseNone(a);/*debug>*/
-    return a.join(this);
+    if (!py.isinstance(a, String)) {
+        return a.join(this);
+    }
+    var res = '';
+    a.iter(function (el, idx) {
+        res += (idx > 0 ? this : '') + el.toString();
+    }, this);
+    return res;
 };
 
 /**
@@ -287,3 +294,14 @@ String.prototype.isIn = function isIn(o) {
         return Object.prototype.isIn.call(this, o);
     }
 };
+
+String.prototype.filter = function filter(f) {
+    var i, l, c, res = '';
+    for (i=0, l=this.length; i < l; i++) {
+        c = this.charAt(i);
+        if (f(c, i)) {
+            res += c;
+        }
+    }
+    return res;
+}

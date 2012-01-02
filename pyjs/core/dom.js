@@ -26,7 +26,7 @@ py.extendNamespace('py.dom', {
     /**
      * Create an Element
      * @param {String} tag Tag name
-     * @param {Object} [obj] attributes of the node
+     * @param {Object|String} [obj] attributes of the node, or a string for content of the node
      * @returns {Element} created element
      */
     create: function create(tag, attrs) {
@@ -38,6 +38,9 @@ py.extendNamespace('py.dom', {
         /*debug>*/
         var el = document.createElement(tag);
         if (attrs) {
+            if (py.isinstance(attrs, String)) {
+                attrs = {content: attrs};
+            }
             //<debug
             if (!py.isinstance(attrs, Object)) {
                 throw TypeError("attributes must be given in an Object");
@@ -61,6 +64,30 @@ py.extendNamespace('py.dom', {
         }
         //debug>
         node.parentNode.removeChild(node);
+    },
+
+    insertAfter: function (node, ref) {
+        ref = py.isinstance(ref, String) ? py.dom.byId(ref) : ref;
+        //<debug
+        py.raiseNone(node);
+        py.raiseNone(ref);
+        //debug>
+
+        var parent = ref.parentNode;
+        if (parent.lastChild == ref) {
+            parent.appendChild(node);
+        } else {
+            parent.insertBefore(node, ref.nextSibling);
+        }
+    },
+
+    insertBefore: function (node, ref) {
+        ref = py.isinstance(ref, String) ? py.dom.byId(ref) : ref;
+        //<debug
+        py.raiseNone(node);
+        py.raiseNone(ref);
+        //debug>
+        ref.parentNode.insertBefore(node, ref);
     },
 
     /**
@@ -104,9 +131,9 @@ py.extendNamespace('py.dom', {
             _attr.iteritems(function(k,v) {
                 node.__setitem__(k, v);
             });
-        } else {
+        } /*<debug*/ else {
             throw TypeError('_attr must a String, an Array or an Object');
-        }
+        } /*debug>*/
     },
 
 

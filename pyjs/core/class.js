@@ -27,6 +27,7 @@ py.declareFromBuiltin = function(name, _parent, obj) {
     }
     _class.prototype.constructor = _class;
     _class.prototype.__name__ = name;
+    _class.__name__ = name;
     _class.prototype.__class__ = _class;
     _class.prototype.__bases__ = [_parent.prototype];
 
@@ -89,6 +90,7 @@ py.declare = function(name, parents, obj) {
         }
     };
     _class.prototype.__name__ = name;
+    _class.__name__ = name;
     _class.prototype.__class__ = _class;
     _class.prototype.__inherited_functions__ = {};
     _class.prototype.__repr__ = function() {

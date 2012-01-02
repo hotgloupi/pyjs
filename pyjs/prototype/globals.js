@@ -183,7 +183,7 @@ var methods = {
      * @returns {String|null}
      */
     repr: function repr(obj) {
-        if (py.isNone(obj)){return null;}
+        if (py.isNone(obj)) { return "null"; }
         return obj.__repr__();
     },
 
