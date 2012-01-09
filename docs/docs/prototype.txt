@@ -34,7 +34,7 @@ A set of method are added to objects and make them really easy to use
 Of course, in order to make things easy, JavaScript is modified, particularly
 base objects. The JavaScript way to do this to modifying prototype, and first
 modification I'll speak about is the property called `__class__`. This simple
-string give us the ability to identify any object, and make easy to know if we
+object give us the ability to identify any object, and make easy to know if we
 have for example an Object, or a Function. Two other important methods (but
 optionals) are `__str__` et `__repr__` which respectively return a simple
 string to identify the object and the Json representation of the object.
@@ -107,7 +107,7 @@ All iterable objects have those methods:
 
   * `all` : returns true if _all contained object_ validate given condition
   * `any` : returns true if _at least one of_ contained object validate given
-	    condition
+            condition
   * `contains`: returns true if given object if contained
 
 Exemples:

@@ -1,7 +1,7 @@
 
 == The core of the library
 
-The core of the library do not provide lots of things, because objet's methods
+The core of the library does not provide lots of things, because objet's methods
 are defined and implemented in their prototype, and, in other hand, there are
 seperate modules that provide most of functionnality needed by the end user.
 But, the ''low level'' of the library give you the ability te easily create
@@ -9,16 +9,16 @@ modules and classes.
 
 === Module management ===
 
-Modules are nothing else JavaScript files. PyJs's files are of course in the
+Modules are nothing else than JavaScript files. PyJs's files are in the
 PyJS directory, which is the root. For exemple, if you want to load the module
 `packer`, located in `pyjs/packer/packer.js`, you'll write:
 -----------------------------------------------------------------------------
 py.importModule('py.packer.packer');
 -----------------------------------------------------------------------------
 
-You may notive we do not specify the extension `.js` of the file. In fact, all
+You may notice we did not specify the extension `.js` of the file. In fact, all
 imported modules will be search from their first name part, here `py`. The
-'namespace' is automatically saved by PyJS when its starting, but it is
+'namespace' is automatically saved by PyJS when it starts, but it is
 totaly possible to register your own:
 -----------------------------------------------------------------------------
 py.registerModulePath('mylib', '/static/resources/JS/MyLib');
@@ -27,8 +27,8 @@ py.importModule('mylib.foo.bar'); // will load /static/resources/JS/MyLib/foo/ba
 
 === The namespaces
 
-To avoid conflicts between modules, you may put all of your code in
-'namespaces'. PyJS library, except some globals, use `py` to prefix all its
+To avoid conflicts between modules, you may want to put all of your code in
+'namespaces'. PyJS library, except for some globals, use `py` to prefix all its
 component. A great tools may be used to create or extend namespaces, it's the
 function `extendNamespace`:
 -----------------------------------------------------------------------------
@@ -60,8 +60,8 @@ mylib.foo.bar.update({
 -----------------------------------------------------------------------------
 
 Notice we omit to test on each step if for example `mylib.foo` already exists,
-if it is an objets... I advice you to use this method that simplify writting
-are make convinients tests.
+if it is an objets... I strongly advice you to use this method that simplify
+writting and makes convinient tests.
 
 === Classes
 
@@ -82,9 +82,9 @@ py.declare('mylib.foo.bar.Baz', null, {
 });
 -----------------------------------------------------------------------------
 
-If you have used the library Dojo, you may not be surprised with this. For
+If you have ever used the library Dojo, you may not be surprised with this. For
 others, first arguments is the name of the class, and in this example, this
-class is created within the ''namespace'' `mylib.foo.bar`. Second argument
+class `Baz` is created within the ''namespace'' `mylib.foo.bar`. Second argument
 is an array of parents classes. At the end, the third is the class itself,
 that we can use like this:
 -----------------------------------------------------------------------------
@@ -95,7 +95,7 @@ b.method(); // my method
 You might see that the class constructor is the method called `__init__`,
 which take arguments given when creating the class.
 
-==== The inheritence
+==== The inheritance
 
 Obviously, classes are usefull if you can 'derive' them. Fortunately, it's
 possible:
@@ -117,7 +117,7 @@ py.declare('C', B, {
 -----------------------------------------------------------------------------
 
 We have defined three classes +A+, +B+ and +C+. The last one 'derive' from
-`A` and `B`, it have their methods. We can now write:
+`A` and `B`, and has its own methods. We can now write:
 
 -----------------------------------------------------------------------------
 var c = new C();
@@ -163,7 +163,7 @@ arguments, either the special objet `arguments`, or a string that is the name
 of the function. You must keep in mind that there are no other method for the
 poor method `$super` to find which method you want to call. If you prefer to
 give the variable `arguments`, it will be used to give real arguments to the
-parent function. But you may want to give others arguments, but fortunatly
+parent function. But you may want to give others arguments. Fortunatly
 it is possible to pass an array, and it will use its content instead.
 -----------------------------------------------------------------------------
 py.declare('A', null, {
@@ -190,7 +190,7 @@ b.m(1, 2); // a = 1, b = 2
 
 === The browser
 
-As PyJS want to be Cross-browser, it try to hide differences. Most of
+As PyJS wants to be Cross-browser, it try to hide differences. Most of
 differences are stored in the module `py.core.browser`, when it's possible. The
 object created when you load PyJS is `py.browser`. It have some properties that
 make easy to find the browser, it's version and others convinient methods.
